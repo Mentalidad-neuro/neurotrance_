@@ -12,6 +12,8 @@ export type Settings = {
   favorites: string[];
   premium: boolean; // suscripción activa (Mercado Pago)
   premiumEmail: string | null;
+  visualMode: 'normal' | 'suave' | 'audio'; // accesibilidad para fotosensibilidad
+  photoWarned: boolean;
   studyList: { id: string; text: string; done: boolean }[];
   // minutos escuchados por día: { '2026-11-17': 12.5 }
   listened: Record<string, number>;
@@ -28,6 +30,8 @@ const DEFAULTS: Settings = {
   favorites: [],
   premium: false,
   premiumEmail: null,
+  visualMode: 'normal',
+  photoWarned: false,
   studyList: [],
   listened: {},
 };

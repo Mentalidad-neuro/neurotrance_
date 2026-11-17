@@ -1,4 +1,5 @@
-// Paletas de NeuroTrance. Se elige con EXPO_PUBLIC_THEME al compilar: 'noche' | 'atardecer' | 'nido'.
+// Paletas de NeuroTrance. Por defecto: Nido de día (7:00 a 19:59) y Atardecer de noche,
+// según la hora en que se abre la app. EXPO_PUBLIC_THEME = 'noche' | 'atardecer' | 'nido' fuerza una.
 
 type Palette = {
   sky: string; // fondo
@@ -47,7 +48,9 @@ const nido: Palette = {
 
 const PALETTES = { noche, atardecer, nido };
 export type ThemeName = keyof typeof PALETTES;
-export const themeName: ThemeName = ((process.env.EXPO_PUBLIC_THEME as ThemeName) in PALETTES ? process.env.EXPO_PUBLIC_THEME : 'atardecer') as ThemeName;
+const forced = process.env.EXPO_PUBLIC_THEME as ThemeName | undefined;
+const hour = new Date().getHours();
+export const themeName: ThemeName = forced && forced in PALETTES ? forced : hour >= 7 && hour < 20 ? 'nido' : 'atardecer';
 export const colors = PALETTES[themeName];
 
 export const fonts = {

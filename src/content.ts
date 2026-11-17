@@ -132,6 +132,14 @@ export const HIPNOSIS: Track[] = [
   },
 ];
 
+// Visuales para entrar en trance, con fondo de ondas theta (estado previo al sueño).
+export const TRANCE: (Track & { visual: 'mandala' | 'luz' | 'agua' | 'estrellas' })[] = [
+  { id: 'tr-mandala', title: 'Mandala que respira', subtitle: 'Sigue su ritmo: crece al inhalar, se recoge al exhalar', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: true, icon: '✿', visual: 'mandala' },
+  { id: 'tr-luz', title: 'Punto de luz', subtitle: 'Fija la mirada y deja que los párpados pesen', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: true, icon: '◉', visual: 'luz' },
+  { id: 'tr-agua', title: 'Ondas en el agua', subtitle: 'Cada onda se lleva un pensamiento', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: false, icon: '◌', visual: 'agua' },
+  { id: 'tr-estrellas', title: 'Cielo que se apaga', subtitle: 'Las estrellas se encienden y apagan muy lento', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: false, icon: '✧', visual: 'estrellas' },
+];
+
 export const ESTUDIO: Track[] = [
   {
     id: 'est-beta',
@@ -197,7 +205,7 @@ export const POMODOROS = [
 ];
 export const LONG_REST = 15; // después de 4 bloques
 
-export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS, ...ESTUDIO];
+export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS, ...TRANCE, ...ESTUDIO];
 export const findTrack = (id: string) => ALL_TRACKS.find((t) => t.id === id);
 
 export const GOALS = ['Dormir', 'Ansiedad', 'Concentrarme', 'Recordar lo estudiado', 'Bloqueo en la prueba'];

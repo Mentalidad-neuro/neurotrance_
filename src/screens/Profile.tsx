@@ -48,6 +48,20 @@ export default function Profile({ back, open, restartOnboarding }: { back: () =>
         <Row title="Aviso de audífonos" sub="Para las ondas binaurales" right={<Toggle label="Aviso de audífonos" value={s.headphoneTip} onChange={(v) => update({ headphoneTip: v })} />} />
       </View>
 
+      <H3>Visuales y fotosensibilidad</H3>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {[
+          { k: 'normal' as const, l: 'Visuales' },
+          { k: 'suave' as const, l: 'Modo suave' },
+          { k: 'audio' as const, l: 'Solo audio' },
+        ].map((o) => (
+          <Chip key={o.k} label={o.l} on={s.visualMode === o.k} onPress={() => update({ visualMode: o.k, photoWarned: true })} />
+        ))}
+      </View>
+      <Hint>
+        Ningún visual tiene destellos ni parpadeos. El modo suave los hace más lentos y con menos contraste. Solo audio deja la pantalla oscura. Si tu teléfono tiene activado "reducir movimiento", los visuales quedan quietos.
+      </Hint>
+
       <H3>Lo que me cuesta</H3>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {GOALS.map((g) => (

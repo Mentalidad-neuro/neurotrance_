@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Eyebrow, H2, H3, Hint, TrackRow } from '../components/ui';
-import { HIPNOSIS, MEDITACIONES, SONIDOS, Track } from '../content';
+import { HIPNOSIS, MEDITACIONES, SONIDOS, TRANCE, Track } from '../content';
 import { useSettings } from '../store';
 import { colors } from '../theme';
 
@@ -40,6 +40,9 @@ export function Hipnosis({ open }: P) {
       <H2>Sesiones para tu mente</H2>
       <List items={HIPNOSIS} open={open} />
       <Hint>Cada sesión tendrá un fondo de sonido para entrar en trance y un final para dormir o para despertar con energía.</Hint>
+      <H3>Visuales para entrar en trance</H3>
+      <List items={TRANCE} open={open} />
+      <Hint>Con ondas theta de fondo (usa audífonos). Sin destellos ni parpadeos. Si eres sensible a la luz, usa el modo suave o solo audio en Mi espacio.</Hint>
     </View>
   );
 }

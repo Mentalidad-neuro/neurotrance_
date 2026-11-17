@@ -57,7 +57,7 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
     heroIsSleep
       ? { k: 'estudiar' as const, icon: 'book' as const, title: tr('Estudiar con foco', 'Focused study'), sub: tr('Pomodoros y sonidos', 'Pomodoros and sounds'), on: () => go('estudiar') }
       : { k: 'dormir' as const, icon: 'moon' as const, title: tr('Dormir', 'Sleep'), sub: tr('Lluvia, olas y más', 'Rain, waves and more'), on: () => go('dormir') },
-    { k: 'calma' as const, icon: 'wind' as const, title: tr('Calmarme ahora', 'Calm down now'), sub: tr('Meditaciones de 3 min', '3-minute meditations'), on: () => go('evaluaciones') },
+    { k: 'calma' as const, icon: 'wind' as const, title: tr('Calmarme ahora', 'Calm down now'), sub: tr('Meditaciones guiadas', 'Guided meditations'), on: () => go('evaluaciones') },
     { k: 'hipnosis' as const, icon: 'spiral' as const, title: tr('Hipnosis', 'Hypnosis'), sub: tr('Sueño, ansiedad, memoria', 'Sleep, anxiety, memory'), on: () => go('hipnosis') },
     { k: 'noche' as const, icon: 'star' as const, title: tr('Noche antes', 'Night before'), sub: tr('Para la víspera', 'For the eve of your exam'), on: () => play(MEDITACIONES[0].id) },
   ];

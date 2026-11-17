@@ -41,22 +41,23 @@ const TABS: { key: Tab; label: () => string; icon: React.ReactNode }[] = [
   },
   { key: 'dormir', label: () => tr('Dormir', 'Sleep'), icon: <Path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /> },
   {
+    key: 'evaluaciones',
+    label: () => tr('Meditar', 'Meditate'),
+    icon: (
+      <>
+        <Circle cx={12} cy={6} r={2.5} />
+        <Path d="M12 10c-2 0-3 1.5-3 3.5V16h6v-2.5c0-2-1-3.5-3-3.5z" />
+        <Path d="M4 19c2.5-2 5-3 8-3s5.5 1 8 3" />
+      </>
+    ),
+  },
+  {
     key: 'hipnosis',
     label: () => tr('Hipnosis', 'Hypnosis'),
     icon: (
       <>
         <Circle cx={12} cy={12} r={8} />
         <Circle cx={12} cy={12} r={4} />
-      </>
-    ),
-  },
-  {
-    key: 'evaluaciones',
-    label: () => tr('Evaluaciones', 'Exams'),
-    icon: (
-      <>
-        <Path d="M5 4h11l3 3v13H5z" />
-        <Path d="M9 12l2 2 4-4" />
       </>
     ),
   },

@@ -42,7 +42,7 @@ export function Hipnosis({ open }: P) {
   return (
     <View>
       <Eyebrow>{tr('Hipnosis transformacional', 'Transformational hypnosis')}</Eyebrow>
-      <H2>{tr('Sesiones para tu mente', 'Sessions for your mind')}</H2>
+      <H2>{tr('Sesiones para entrar en trance', 'Sessions to go into trance')}</H2>
       <List items={HIPNOSIS} open={open} />
       <Hint>{tr('Elige en el reproductor el sonido de fondo que más te ayude a entrar en trance. Usa audífonos y busca un lugar tranquilo.', 'In the player, choose the background sound that best helps you go into trance. Use headphones and find a quiet place.')}</Hint>
       <H3>{tr('Visuales para entrar en trance', 'Visuals for going into trance')}</H3>
@@ -55,8 +55,8 @@ export function Hipnosis({ open }: P) {
 export function Evaluaciones({ open }: P) {
   return (
     <View>
-      <Eyebrow>{tr('Para la prueba', 'For the exam')}</Eyebrow>
-      <H2>{tr('Meditaciones de 3 minutos', '3-minute meditations')}</H2>
+      <Eyebrow color={colors.teal}>{tr('Meditaciones guiadas', 'Guided meditations')}</Eyebrow>
+      <H2>{tr('Para antes y durante la prueba', 'For before and during the exam')}</H2>
       <List items={MEDITACIONES} open={open} />
       <Hint>{tr('Úsalas la noche antes, en la fila de entrada o en medio de la prueba. Con audífonos se escuchan mejor.', 'Use them the night before, in line before going in, or in the middle of the exam. They sound best with headphones.')}</Hint>
       <H3>{tr('Minutos de respiración', 'Breathing minutes')}</H3>

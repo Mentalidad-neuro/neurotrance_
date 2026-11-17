@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 import { LinkButton } from '../components/ui';
 import TranceVisual, { VISUALS, VisualKind } from '../components/TranceVisual';
-import type { Track } from '../content';
+import { BACKGROUNDS, findBg, type Track } from '../content';
 import { useSettings } from '../store';
 import { colors, fonts } from '../theme';
 import Backdrop from '../components/Backdrop';
@@ -30,8 +30,16 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   const [warn, setWarn] = useState(!s.photoWarned && !!track.visual);
   const audioOnly = s.visualMode === 'audio';
   const safe = s.visualMode === 'suave';
-  const player = useAudioPlayer(track.source ?? null, { updateInterval: 500 });
+  const isTrance = !!track.loop && track.kind === 'hipnosis';
+  const hasVoice = !track.loop;
+  // Visuales de trance: el sonido es el fondo que la persona elige. Sesiones con voz: la voz va aparte y el fondo suena bajo, en paralelo.
+  const tranceBg = findBg(s.tranceBg === 'ninguno' ? 'theta' : s.tranceBg);
+  const player = useAudioPlayer((isTrance ? tranceBg.source : track.source) ?? null, { updateInterval: 500 });
   const status = useAudioPlayerStatus(player);
+  const bg = findBg(s.bg);
+  const bgPlayer = useAudioPlayer(hasVoice ? bg.source ?? null : null);
+  const bgKey = isTrance ? tranceBg.key : hasVoice ? bg.key : null;
+  const lastBg = useRef(bgKey);
   const [sleepMin, setSleepMin] = useState(30);
   const [cue, setCue] = useState(0);
   const [dim, setDim] = useState(false);
@@ -53,12 +61,51 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
         player.setActiveForLockScreen(true, { title: track.title, artist: 'NeuroTrance' });
       } catch {}
     }
+    bgPlayer.loop = true;
+    bgPlayer.volume = s.bgVolume;
     return () => {
       clearFade();
       if (listenedSec.current > 0) addListening(listenedSec.current / 60);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // El fondo sigue a la voz: suena cuando la voz suena y se detiene con ella.
+  useEffect(() => {
+    if (!hasVoice) return;
+    if (status.playing && bg.source) bgPlayer.play();
+    else bgPlayer.pause();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status.playing, bg.key]);
+
+  useEffect(() => {
+    bgPlayer.volume = s.bgVolume;
+  }, [s.bgVolume, bgPlayer]);
+
+  // Cambio de fondo elegido.
+  useEffect(() => {
+    if (bgKey === lastBg.current) return;
+    lastBg.current = bgKey;
+    if (isTrance && tranceBg.source) {
+      const was = status.playing;
+      player.replace(tranceBg.source);
+      player.loop = true;
+      if (was) player.play();
+    } else if (hasVoice) {
+      if (bg.source) {
+        bgPlayer.replace(bg.source);
+        bgPlayer.loop = true;
+        bgPlayer.volume = s.bgVolume;
+        if (status.playing) bgPlayer.play();
+      } else bgPlayer.pause();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bgKey]);
+
+  const chooseBg = (k: string) => update(isTrance ? { tranceBg: k } : { bg: k });
+  const stepVol = (d: number) => update({ bgVolume: Math.round(Math.min(1, Math.max(0.05, s.bgVolume + d)) * 100) / 100 });
+  const bgOptions = isTrance ? BACKGROUNDS.filter((b) => b.key !== 'ninguno') : BACKGROUNDS;
+  const showBinauralTip = s.headphoneTip && (isTrance ? tranceBg.binaural : hasVoice && bg.binaural);
 
   // Cuenta el tiempo escuchado (para "Tu semana").
   useEffect(() => {
@@ -196,8 +243,38 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
               </Pressable>
             ))}
           </View>
-          {(track.tag === 'audífonos' || track.tag === 'headphones') && s.headphoneTip && <Text style={st.tip}>{tr('Ponte audífonos: cada oído recibe un tono distinto.', 'Put on headphones: each ear hears a different tone.')}</Text>}
+          {!isTrance && (track.tag === 'audífonos' || track.tag === 'headphones') && s.headphoneTip && <Text style={st.tip}>{tr('Ponte audífonos: cada oído recibe un tono distinto.', 'Put on headphones: each ear hears a different tone.')}</Text>}
         </>
+      )}
+
+      {(hasVoice || isTrance) && (
+        <View style={st.bgBox}>
+          <Text style={st.timerLabel}>{tr('Sonido de fondo', 'Background sound')}</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.bgRow}>
+            {bgOptions.map((b) => {
+              const on = bgKey === b.key;
+              return (
+                <Pressable key={b.key} onPress={() => chooseBg(b.key)} style={[st.tBtn, on && st.tBtnOn]} accessibilityRole="radio" accessibilityState={{ selected: on }}>
+                  <Text style={[st.tText, on && { color: colors.sky }]}>{b.label()}</Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          {hasVoice && bg.source && (
+            <View style={st.volRow}>
+              <Pressable onPress={() => stepVol(-0.1)} hitSlop={8} style={st.volBtn} accessibilityRole="button" accessibilityLabel={tr('Bajar el fondo', 'Lower the background')}>
+                <Text style={st.volSign}>−</Text>
+              </Pressable>
+              <View style={st.volBar} accessibilityLabel={tr(`Volumen del fondo ${Math.round(s.bgVolume * 100)}%`, `Background volume ${Math.round(s.bgVolume * 100)}%`)}>
+                <View style={[st.volFill, { width: `${s.bgVolume * 100}%` }]} />
+              </View>
+              <Pressable onPress={() => stepVol(0.1)} hitSlop={8} style={st.volBtn} accessibilityRole="button" accessibilityLabel={tr('Subir el fondo', 'Raise the background')}>
+                <Text style={st.volSign}>+</Text>
+              </Pressable>
+            </View>
+          )}
+          {showBinauralTip && <Text style={st.tip}>{tr('Ponte audífonos: cada oído recibe un tono distinto.', 'Put on headphones: each ear hears a different tone.')}</Text>}
+        </View>
       )}
 
       {warn && (
@@ -275,6 +352,13 @@ const st = StyleSheet.create({
   tBtnOn: { backgroundColor: colors.teal, borderColor: colors.teal },
   tText: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.muted },
   tip: { textAlign: 'center', color: colors.blue, fontFamily: fonts.body, fontSize: 12, marginTop: 12 },
+  bgBox: { marginTop: 4 },
+  bgRow: { gap: 8, paddingHorizontal: 4, paddingTop: 8 },
+  volRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12, paddingHorizontal: 20 },
+  volBtn: { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card },
+  volSign: { fontFamily: fonts.bodyBold, fontSize: 18, color: colors.text, lineHeight: 20 },
+  volBar: { flex: 1, height: 6, borderRadius: 6, backgroundColor: colors.line, overflow: 'hidden' },
+  volFill: { height: 6, backgroundColor: colors.teal },
   dim: { ...StyleSheet.absoluteFill, backgroundColor: '#000', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 60 },
   dimText: { color: '#ffffff30', fontFamily: fonts.body, fontSize: 13 },
 });

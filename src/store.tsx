@@ -18,6 +18,9 @@ export type Settings = {
   photoWarned: boolean;
   studyList: { id: string; text: string; done: boolean }[];
   lang: Lang | null; // null = idioma del teléfono
+  bg: string; // fondo elegido para las sesiones con voz
+  bgVolume: number; // 0 a 1, relativo a la voz
+  tranceBg: string; // fondo de los visuales de trance
   // minutos escuchados por día: { '2026-11-17': 12.5 }
   listened: Record<string, number>;
 };
@@ -38,6 +41,9 @@ const DEFAULTS: Settings = {
   photoWarned: false,
   studyList: [],
   lang: null,
+  bg: 'ninguno',
+  bgVolume: 0.3,
+  tranceBg: 'theta',
   listened: {},
 };
 

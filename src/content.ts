@@ -23,40 +23,40 @@ export const MEDITACIONES: Track[] = [
     subtitle: 'Para dormir en calma antes de la evaluación',
     kind: 'meditacion',
     source: require('../assets/audio/meditaciones/1-noche-anterior.mp3'),
-    duration: '4:18',
+    duration: '3:45',
     free: true,
     icon: '1',
-  }, { title: 'The night before', subtitle: 'To sleep calmly before your exam', source: require('../assets/audio/meditaciones/en/1-night-before.mp3'), duration: '4:53' }),
+  }, { title: 'The night before', subtitle: 'To sleep calmly before your exam', source: require('../assets/audio/meditaciones/en/1-night-before.mp3'), duration: '4:20' }),
   bilingual({
     id: 'med-2',
     title: 'Antes de entrar',
     subtitle: 'En la fila o mientras esperas',
     kind: 'meditacion',
     source: require('../assets/audio/meditaciones/2-antes-de-entrar.mp3'),
-    duration: '3:23',
+    duration: '3:05',
     free: true,
     icon: '2',
-  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '3:57' }),
+  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '3:39' }),
   bilingual({
     id: 'med-3',
     title: 'Si me bloqueo',
     subtitle: 'Cuando una pregunta te paraliza',
     kind: 'meditacion',
     source: require('../assets/audio/meditaciones/3-bloqueo-en-la-prueba.mp3'),
-    duration: '3:03',
+    duration: '2:48',
     free: false,
     icon: '3',
-  }, { title: 'If my mind goes blank', subtitle: 'When a question freezes you', source: require('../assets/audio/meditaciones/en/3-mind-goes-blank.mp3'), duration: '3:32' }),
+  }, { title: 'If my mind goes blank', subtitle: 'When a question freezes you', source: require('../assets/audio/meditaciones/en/3-mind-goes-blank.mp3'), duration: '3:17' }),
   bilingual({
     id: 'med-4',
     title: 'Entre pruebas',
     subtitle: 'Para soltar la anterior y empezar de nuevo',
     kind: 'meditacion',
     source: require('../assets/audio/meditaciones/4-entre-pruebas.mp3'),
-    duration: '3:09',
+    duration: '2:51',
     free: false,
     icon: '4',
-  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '3:51' }),
+  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '3:33' }),
 ];
 
 export const SONIDOS: Track[] = [
@@ -220,3 +220,19 @@ const GOALS_EN: Record<string, string> = {
   'Bloqueo en la prueba': 'Mind going blank in exams',
 };
 export const goalLabel = (g: string) => tr(g, GOALS_EN[g] ?? g);
+
+// Fondos que cada persona puede elegir en el reproductor (uno solo a la vez).
+export type BgKey = 'ninguno' | 'lluvia' | 'agua' | 'mar' | 'bosque' | 'cuenco' | 'alfa' | 'beta' | 'gamma' | 'theta';
+export const BACKGROUNDS: { key: BgKey; label: () => string; source?: number; binaural?: boolean }[] = [
+  { key: 'ninguno', label: () => tr('Ninguno', 'None') },
+  { key: 'lluvia', label: () => tr('Lluvia', 'Rain'), source: require('../assets/audio/dormir/lluvia-suave.mp3') },
+  { key: 'agua', label: () => tr('Agua', 'Stream'), source: require('../assets/audio/fondos/agua.mp3') },
+  { key: 'mar', label: () => tr('Mar', 'Sea'), source: require('../assets/audio/dormir/olas-del-mar.mp3') },
+  { key: 'bosque', label: () => tr('Bosque', 'Forest'), source: require('../assets/audio/fondos/bosque.mp3') },
+  { key: 'cuenco', label: () => tr('Cuenco', 'Singing bowl'), source: require('../assets/audio/fondos/cuenco.mp3') },
+  { key: 'alfa', label: () => tr('Ondas alfa', 'Alpha waves'), source: require('../assets/audio/estudiar/ondas-alfa.mp3'), binaural: true },
+  { key: 'beta', label: () => tr('Ondas beta', 'Beta waves'), source: require('../assets/audio/estudiar/ondas-beta.mp3'), binaural: true },
+  { key: 'gamma', label: () => tr('Ondas gamma', 'Gamma waves'), source: require('../assets/audio/estudiar/ondas-gamma.mp3'), binaural: true },
+  { key: 'theta', label: () => tr('Ondas theta', 'Theta waves'), source: require('../assets/audio/hipnosis/ondas-theta.mp3'), binaural: true },
+];
+export const findBg = (k: string) => BACKGROUNDS.find((b) => b.key === k) ?? BACKGROUNDS[0];

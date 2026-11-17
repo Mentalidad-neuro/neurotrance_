@@ -12,7 +12,7 @@ export const TRIAL_DAYS = 7;
 
 // true = después de la prueba, los audios marcados "free" siguen gratis.
 // false = después de la prueba todo se bloquea hasta suscribirse.
-export const FREE_AFTER_TRIAL = true;
+export const FREE_AFTER_TRIAL = false;
 
 // Precio que se muestra, por ejemplo '$2.990 al mes'. Vacío = no se muestra.
-export const PRICE_TEXT = '';
+export const PRICE_TEXT = '$2.999 al mes';

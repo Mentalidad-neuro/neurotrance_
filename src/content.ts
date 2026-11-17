@@ -129,7 +129,7 @@ export const HIPNOSIS: Track[] = [
     duration: '5:22',
     free: false,
     icon: '☾',
-  }, { title: 'Deep sleep', subtitle: 'To fall asleep without overthinking', source: undefined, duration: '' }),
+  }, { title: 'Deep sleep', subtitle: 'To fall asleep without overthinking', source: require('../assets/audio/hipnosis/voz/en/1-deep-sleep.mp3'), duration: '6:14' }),
   bilingual({
     id: 'hip-ansiedad',
     title: 'Soltar la ansiedad',
@@ -139,7 +139,7 @@ export const HIPNOSIS: Track[] = [
     duration: '5:38',
     free: false,
     icon: '○',
-  }, { title: 'Release anxiety', subtitle: 'Calm before the exam', source: undefined, duration: '' }),
+  }, { title: 'Release anxiety', subtitle: 'Calm before the exam', source: require('../assets/audio/hipnosis/voz/en/2-release-stress-anxiety.mp3'), duration: '6:22' }),
   bilingual({
     id: 'hip-memoria',
     title: 'Mi mente recuerda',
@@ -149,7 +149,7 @@ export const HIPNOSIS: Track[] = [
     duration: '5:47',
     free: false,
     icon: '✦',
-  }, { title: 'My mind remembers', subtitle: 'Trust in your memory', source: undefined, duration: '' }),
+  }, { title: 'My mind remembers', subtitle: 'Trust in your memory', source: require('../assets/audio/hipnosis/voz/en/3-memory-mental-processes.mp3'), duration: '6:18' }),
 ];
 
 // Visuales para entrar en trance, con fondo de ondas theta (estado previo al sueño).

@@ -20,7 +20,7 @@ export const MEDITACIONES: Track[] = [
   bilingual({
     id: 'med-1',
     title: 'La noche anterior',
-    subtitle: 'Para dormir tranquila antes de la evaluación',
+    subtitle: 'Para dormir en calma antes de la evaluación',
     kind: 'meditacion',
     source: require('../assets/audio/meditaciones/1-noche-anterior.mp3'),
     duration: '3:50',
@@ -30,7 +30,7 @@ export const MEDITACIONES: Track[] = [
   bilingual({
     id: 'med-2',
     title: 'Antes de entrar',
-    subtitle: 'En la fila o sentada esperando',
+    subtitle: 'En la fila o mientras esperas',
     kind: 'meditacion',
     source: require('../assets/audio/meditaciones/2-antes-de-entrar.mp3'),
     duration: '2:58',
@@ -108,7 +108,7 @@ export const HIPNOSIS: Track[] = [
   bilingual({
     id: 'hip-sueno',
     title: 'Dormir profundo',
-    subtitle: 'Para quedarte dormida sin darle vueltas',
+    subtitle: 'Para dormirte sin darle vueltas',
     kind: 'hipnosis',
     duration: '20 min',
     free: false,

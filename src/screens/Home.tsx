@@ -166,7 +166,7 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
   );
 }
 
-const glass = colors.glass ? { borderWidth: 1, borderColor: colors.line } : { boxShadow: '0 10px 28px rgba(122,102,207,0.13)' };
+const glass = colors.glass ? { borderWidth: 1, borderColor: colors.line } : { boxShadow: '0 10px 28px rgba(63,110,160,0.13)' };
 const st = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontFamily: fonts.display, fontSize: themeName === 'estrellada' ? 31 : 28, lineHeight: themeName === 'estrellada' ? 36 : 34, color: colors.text, marginTop: 8, marginBottom: 4 },
@@ -176,8 +176,8 @@ const st = StyleSheet.create({
   moodText: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.text },
   trial: { borderWidth: 1, borderColor: colors.moon, borderRadius: 18, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 12 },
   trialText: { fontFamily: fonts.bodySemi, fontSize: 13, lineHeight: 19, color: colors.text },
-  avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: themeName === 'algodon' ? '#ffd8c2' : colors.card, borderWidth: colors.glass ? 1 : 0, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: themeName === 'algodon' ? '#b5603f' : colors.moon, fontFamily: fonts.display, fontSize: 16 },
+  avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: themeName === 'algodon' ? '#d9e8f6' : colors.card, borderWidth: colors.glass ? 1 : 0, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: themeName === 'algodon' ? '#3f6ea0' : colors.moon, fontFamily: fonts.display, fontSize: 16 },
   count: { backgroundColor: colors.card, borderRadius: 26, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14, ...glass },
   ringWrap: { width: 62, height: 62, alignItems: 'center', justifyContent: 'center' },
   ringN: { position: 'absolute', fontFamily: fonts.display, fontSize: 20, color: colors.text },
@@ -197,9 +197,9 @@ const st = StyleSheet.create({
     backgroundColor: themeName === 'estrellada' ? '#f3d08d' : '#ffffff8c',
     opacity: themeName === 'estrellada' ? 0.85 : 1,
   },
-  heroEyebrow: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: themeName === 'estrellada' ? '#ffe2a8' : '#9a5a3a' },
+  heroEyebrow: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: themeName === 'estrellada' ? '#ffe2a8' : '#3f6ea0' },
   heroTitle: { fontFamily: fonts.display, fontSize: 24, color: themeName === 'estrellada' ? '#ffffff' : colors.text, marginTop: 6 },
-  heroSub: { fontFamily: fonts.body, fontSize: 13, lineHeight: 19, color: themeName === 'estrellada' ? '#e3e0ff' : '#5b5378', marginTop: 4, width: '78%' },
+  heroSub: { fontFamily: fonts.body, fontSize: 13, lineHeight: 19, color: themeName === 'estrellada' ? '#e3e0ff' : '#4f5b69', marginTop: 4, width: '78%' },
   heroBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', backgroundColor: '#ffffff', borderRadius: 99, paddingVertical: 8, paddingHorizontal: 16, marginTop: 14 },
   heroBtnText: { fontFamily: fonts.bodyBold, fontSize: 13, color: themeName === 'estrellada' ? '#2c2a6b' : colors.text },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10, marginTop: 10 },

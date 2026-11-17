@@ -205,7 +205,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
           <Text style={st.warnTitle}>{tr('Antes de empezar', 'Before you start')}</Text>
           <Text style={st.warnText}>
             {tr(
-              'Esta sesión tiene imágenes en movimiento lento. No tienen destellos ni parpadeos, pero si tienes epilepsia o eres sensible a la luz, elige la opción que te haga sentir más segura.',
+              'Esta sesión tiene imágenes en movimiento lento. No tienen destellos ni parpadeos, pero si tienes epilepsia o eres sensible a la luz, elige la opción que te dé más seguridad.',
               'This session has slowly moving images. They have no flashes or flicker, but if you have epilepsy or are sensitive to light, choose the option that feels safest for you.',
             )}
           </Text>

@@ -50,12 +50,12 @@ const nido: Palette = {
   orbEdge: '#b98fc6', orbCore: '#fff8ef', onTile: '#ffffffd9', statusBar: 'dark',
 };
 
-// Claro y alegre: lavanda, menta y durazno sobre blanco lila.
+// Claro y tranquilo, para cualquier persona: celeste, salvia y arena sobre blanco frío.
 const algodon: Palette = {
-  sky: '#fbf8ff', sky2: '#ffffff', card: '#ffffff', line: '#ebe5f8', text: '#3b3458', muted: '#837c9f',
-  moon: '#7a66cf', teal: '#3f8f6b', lilac: '#7a5fd0', blue: '#4f68b8',
-  gradTop: '#efe8ff', success: '#dff7ec', successSoft: '#eefaf3', tealSoft: '#a8e6cf66', lilacSoft: '#e9e1ff',
-  orbEdge: '#b9a7f2', orbCore: '#fff3ea', onTile: '#5b5378', statusBar: 'dark', tileText: '#3b3458', orbA: '#ffc9a8', orbB: '#bfaaf7',
+  sky: '#f6f9fb', sky2: '#ffffff', card: '#ffffff', line: '#e2e9ef', text: '#2f3a48', muted: '#6f7c8b',
+  moon: '#3f78a3', teal: '#3f8a5f', lilac: '#3d7486', blue: '#3f6ea0',
+  gradTop: '#e6f0f8', success: '#dff1e6', successSoft: '#eef8f1', tealSoft: '#c2e2cd80', lilacSoft: '#e1edf4',
+  orbEdge: '#9cc3e0', orbCore: '#fbf7ee', onTile: '#4f5b69', statusBar: 'dark', tileText: '#2f3a48', orbA: '#f3e0c2', orbB: '#bcdcef',
 };
 
 // Noche estrellada: azul profundo, brillo dorado y tarjetas de vidrio.
@@ -84,12 +84,12 @@ export const fonts = {
 
 const GRADIENTS = {
   algodon: {
-    estudiar: ['#ffd8bf', '#ffc6a6'],
-    dormir: ['#d3defe', '#bccbfb'],
-    calma: ['#cdf2e0', '#b4e8d0'],
-    hipnosis: ['#e8deff', '#d6c8fc'],
-    noche: ['#ffe6c9', '#fdd3b3'],
-    hero: ['#ffd8bf', '#e9ddff'],
+    estudiar: ['#f6e6cf', '#efd8b5'],
+    dormir: ['#d9e8f6', '#c5daf0'],
+    calma: ['#d8ede0', '#c3e2cf'],
+    hipnosis: ['#e0e5f2', '#cfd6ec'],
+    noche: ['#f3edd6', '#eadfba'],
+    hero: ['#d9e8f6', '#d8ede0'],
   },
   estrellada: {
     estudiar: ['#ffffff17', '#ffffff0a'],
@@ -127,4 +127,4 @@ const GRADIENTS = {
 export const tileGradients = GRADIENTS[themeName];
 // Color de los íconos dentro de las tarjetas de inicio.
 export const tileIcon = (k: 'estudiar' | 'dormir' | 'calma' | 'hipnosis' | 'noche') =>
-  themeName === 'estrellada' ? colors.moon : themeName === 'algodon' ? { estudiar: '#c9734a', dormir: '#4f68b8', calma: '#3f8f6b', hipnosis: '#7b5fd0', noche: '#b5703f' }[k] : '#fffaf5';
+  themeName === 'estrellada' ? colors.moon : themeName === 'algodon' ? { estudiar: '#a3682c', dormir: '#3f6ea0', calma: '#3f8a5f', hipnosis: '#56609e', noche: '#8f7426' }[k] : '#fffaf5';

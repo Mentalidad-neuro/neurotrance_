@@ -38,8 +38,8 @@ export default function Backdrop() {
   if (themeName === 'algodon') {
     return (
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <View style={[st.blob, { right: -80, top: -80, width: 270, height: 270, backgroundColor: '#ece4ff' }]} />
-        <View style={[st.blob, { left: -70, top: 150, width: 160, height: 160, backgroundColor: '#e2f8ee' }]} />
+        <View style={[st.blob, { right: -80, top: -80, width: 270, height: 270, backgroundColor: '#e3eef8' }]} />
+        <View style={[st.blob, { left: -70, top: 150, width: 160, height: 160, backgroundColor: '#e4f2e9' }]} />
       </View>
     );
   }

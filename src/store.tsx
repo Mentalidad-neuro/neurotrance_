@@ -11,6 +11,7 @@ export type Settings = {
   headphoneTip: boolean;
   favorites: string[];
   premium: boolean; // se conectará con la suscripción de App Store / Google Play
+  studyList: { id: string; text: string; done: boolean }[];
   // minutos escuchados por día: { '2026-11-17': 12.5 }
   listened: Record<string, number>;
 };
@@ -25,6 +26,7 @@ const DEFAULTS: Settings = {
   headphoneTip: true,
   favorites: [],
   premium: false,
+  studyList: [],
   listened: {},
 };
 

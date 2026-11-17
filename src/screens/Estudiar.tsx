@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { Eyebrow, H2, H3, Hint, Pill } from '../components/ui';
+import StudyList from '../components/StudyList';
 import { ESTUDIO, LONG_REST, POMODOROS, Track } from '../content';
 import { cancelPomodoroEnd, schedulePomodoroEnd } from '../notifications';
 import { useSettings } from '../store';
@@ -163,6 +164,9 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
           )}
         </View>
       </View>
+
+      <H3>Lo que voy a estudiar</H3>
+      <StudyList />
 
       <H3>Tiempo de concentración</H3>
       <View style={st.chips}>

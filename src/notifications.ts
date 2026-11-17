@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { tr } from './i18n';
 
 const BEDTIME_ID = 'recordatorio-noche';
 const POMODORO_ID = 'pomodoro-fin';
@@ -24,15 +25,15 @@ export async function scheduleBedtimeReminder(bedtime: string, enabled: boolean)
     await Notifications.cancelScheduledNotificationAsync(BEDTIME_ID).catch(() => {});
     if (!enabled) return true;
     if (!(await ensurePermission())) return false;
-    await ensureChannel('noche', 'Recordatorio de noche');
+    await ensureChannel('noche', tr('Recordatorio de noche', 'Bedtime reminder'));
     const [h, m] = bedtime.split(':').map(Number);
     let total = h * 60 + m - 15;
     if (total < 0) total += 24 * 60;
     await Notifications.scheduleNotificationAsync({
       identifier: BEDTIME_ID,
       content: {
-        title: 'Es hora de bajar el ritmo',
-        body: 'Tu sonido para dormir te espera. Lo que estudiaste hoy se guarda mientras descansas.',
+        title: tr('Es hora de bajar el ritmo', 'Time to wind down'),
+        body: tr('Tu sonido para dormir te espera. Lo que estudiaste hoy se guarda mientras descansas.', 'Your sleep sound is waiting. What you studied today is stored while you rest.'),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,

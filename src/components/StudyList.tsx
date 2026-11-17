@@ -4,8 +4,12 @@ import { useAudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import { tr } from '../i18n';
 
-const PRAISE = ['¡Bien hecho!', '¡Uno menos!', '¡Vas muy bien!', '¡Sigue así!', '¡Tu mente lo guardó!', '¡Excelente avance!'];
+const PRAISE = () =>
+  tr('es', 'en') === 'en'
+    ? ['Well done!', 'One down!', 'You are doing great!', 'Keep going!', 'Your mind saved it!', 'Great progress!']
+    : ['¡Bien hecho!', '¡Uno menos!', '¡Vas muy bien!', '¡Sigue así!', '¡Tu mente lo guardó!', '¡Excelente avance!'];
 const CONFETTI = [colors.moon, colors.lilac, colors.teal, colors.blue];
 
 function vibrate(strong = false) {
@@ -115,7 +119,7 @@ export default function StudyList() {
       } else {
         play(ding);
         vibrate();
-        setPraise(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+        setPraise(PRAISE()[Math.floor(Math.random() * 6)]);
       }
     } else setPraise('');
   };
@@ -127,13 +131,13 @@ export default function StudyList() {
           value={text}
           onChangeText={setText}
           onSubmitEditing={add}
-          placeholder="Ej: Funciones cuadráticas"
+          placeholder={tr('Ej: Funciones cuadráticas', 'E.g. Quadratic functions')}
           placeholderTextColor="#7f89ad"
           returnKeyType="done"
           style={st.input}
-          accessibilityLabel="Tema para estudiar"
+          accessibilityLabel={tr('Tema para estudiar', 'Topic to study')}
         />
-        <Pressable onPress={add} style={st.add} accessibilityRole="button" accessibilityLabel="Agregar tema">
+        <Pressable onPress={add} style={st.add} accessibilityRole="button" accessibilityLabel={tr('Agregar tema', 'Add topic')}>
           <Text style={st.addText}>+</Text>
         </Pressable>
       </View>
@@ -142,7 +146,7 @@ export default function StudyList() {
         <View style={st.progressWrap}>
           <View style={st.progressHead}>
             <Text style={st.progressText}>
-              {done} de {total} listos
+              {tr(`${done} de ${total} listos`, `${done} of ${total} done`)}
             </Text>
             <Text style={[st.progressPct, allDone && { color: colors.teal }]}>{Math.round((done / total) * 100)}%</Text>
           </View>
@@ -159,24 +163,24 @@ export default function StudyList() {
         ))}
       </View>
 
-      {total === 0 && <Text style={st.empty}>Escribe los temas que vas a estudiar hoy. Márcalos a medida que los termines y mira cómo se llena tu barra.</Text>}
+      {total === 0 && <Text style={st.empty}>{tr('Escribe los temas que vas a estudiar hoy. Márcalos a medida que los termines y mira cómo se llena tu barra.', 'Write down the topics you will study today. Check them off as you finish and watch your bar fill up.')}</Text>}
 
       {allDone && (
         <View style={st.done}>
           <Celebration key={party} />
           <Text style={st.doneEmoji}>🌙</Text>
-          <Text style={st.doneTitle}>¡Terminaste todo!</Text>
-          <Text style={st.doneSub}>Date un descanso. Esta noche tu cerebro va a guardar lo que estudiaste.</Text>
+          <Text style={st.doneTitle}>{tr('¡Terminaste todo!', 'You finished everything!')}</Text>
+          <Text style={st.doneSub}>{tr('Date un descanso. Esta noche tu cerebro va a guardar lo que estudiaste.', 'Take a break. Tonight your brain will store what you studied.')}</Text>
         </View>
       )}
 
       {total > 0 && (
         <View style={st.actions}>
           <Pressable onPress={() => { update({ studyList: list.map((i) => ({ ...i, done: false })) }); setPraise(''); }} style={st.action} accessibilityRole="button">
-            <Text style={st.actionText}>Reiniciar</Text>
+            <Text style={st.actionText}>{tr('Reiniciar', 'Reset')}</Text>
           </Pressable>
           <Pressable onPress={() => { update({ studyList: [] }); setPraise(''); }} style={st.action} accessibilityRole="button">
-            <Text style={st.actionText}>Lista nueva</Text>
+            <Text style={st.actionText}>{tr('Lista nueva', 'New list')}</Text>
           </Pressable>
         </View>
       )}

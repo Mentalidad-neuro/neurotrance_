@@ -16,3 +16,4 @@ export const FREE_AFTER_TRIAL = false;
 
 // Precio que se muestra, por ejemplo '$2.990 al mes'. Vacío = no se muestra.
 export const PRICE_TEXT = '$2.999 al mes';
+export const PRICE_TEXT_EN = 'CLP 2,999 per month';

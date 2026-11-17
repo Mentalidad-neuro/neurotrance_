@@ -9,15 +9,16 @@ import TranceVisual, { VISUALS, VisualKind } from '../components/TranceVisual';
 import type { Track } from '../content';
 import { useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import { tr } from '../i18n';
 
-const TIMER_OPTIONS = [
+const TIMER_OPTIONS = () => [
   { label: '15 min', min: 15 },
   { label: '30 min', min: 30 },
-  { label: '1 hora', min: 60 },
-  { label: 'Toda la noche', min: 0 },
+  { label: tr('1 hora', '1 hour'), min: 60 },
+  { label: tr('Toda la noche', 'All night'), min: 0 },
 ];
 const FADE_SECONDS = 30;
-const CUES = ['Inhala…', 'Sostén…', 'Exhala…'];
+const CUES = () => [tr('Inhala…', 'Breathe in…'), tr('Sostén…', 'Hold…'), tr('Exhala…', 'Breathe out…')];
 
 const fmt = (sec: number) => (isFinite(sec) && sec > 0 ? `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}` : '0:00');
 
@@ -134,8 +135,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   return (
     <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
       <View style={st.top}>
-        <LinkButton label="‹ Volver" onPress={onClose} />
-        <Pressable onPress={() => toggleFavorite(track.id)} hitSlop={10} accessibilityLabel={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}>
+        <LinkButton label={tr('‹ Volver', '‹ Back')} onPress={onClose} />
+        <Pressable onPress={() => toggleFavorite(track.id)} hitSlop={10} accessibilityLabel={fav ? tr('Quitar de favoritos', 'Remove from favorites') : tr('Agregar a favoritos', 'Add to favorites')}>
           <Text style={[st.heart, fav && { color: colors.moon }]}>{fav ? '♥' : '♡'}</Text>
         </Pressable>
       </View>
@@ -143,7 +144,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
       <View style={st.visualWrap}>
         {audioOnly ? (
           <View style={st.audioOnly}>
-            <Text style={st.audioOnlyText}>Solo audio</Text>
+            <Text style={st.audioOnlyText}>{tr('Solo audio', 'Audio only')}</Text>
           </View>
         ) : (
           <TranceVisual kind={visual} playing={status.playing} safe={safe} />
@@ -175,38 +176,41 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
       )}
 
       <View style={{ alignItems: 'center', marginTop: 18 }}>
-        <Pressable style={st.big} onPress={toggle} accessibilityRole="button" accessibilityLabel={status.playing ? 'Pausar' : 'Reproducir'}>
+        <Pressable style={st.big} onPress={toggle} accessibilityRole="button" accessibilityLabel={status.playing ? tr('Pausar', 'Pause') : tr('Reproducir', 'Play')}>
           <Svg width={30} height={30} viewBox="0 0 24 24">
             <Path d={status.playing ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M8 5v14l11-7z'} fill={colors.sky} />
           </Svg>
         </Pressable>
       </View>
-      <Text style={st.cue}>{status.playing ? CUES[cue] : status.isBuffering ? 'Cargando…' : ''}</Text>
+      <Text style={st.cue}>{status.playing ? CUES()[cue] : status.isBuffering ? tr('Cargando…', 'Loading…') : ''}</Text>
 
       {isLoop && (
         <>
-          <Text style={st.timerLabel}>Se apaga solo en</Text>
+          <Text style={st.timerLabel}>{tr('Se apaga solo en', 'Turns off by itself in')}</Text>
           <View style={st.timer}>
-            {TIMER_OPTIONS.map((o) => (
+            {TIMER_OPTIONS().map((o) => (
               <Pressable key={o.min} onPress={() => setSleepMin(o.min)} style={[st.tBtn, sleepMin === o.min && st.tBtnOn]} accessibilityRole="radio" accessibilityState={{ selected: sleepMin === o.min }}>
                 <Text style={[st.tText, sleepMin === o.min && { color: colors.sky }]}>{o.label}</Text>
               </Pressable>
             ))}
           </View>
-          {track.tag === 'audífonos' && s.headphoneTip && <Text style={st.tip}>Ponte audífonos: cada oído recibe un tono distinto.</Text>}
+          {(track.tag === 'audífonos' || track.tag === 'headphones') && s.headphoneTip && <Text style={st.tip}>{tr('Ponte audífonos: cada oído recibe un tono distinto.', 'Put on headphones: each ear hears a different tone.')}</Text>}
         </>
       )}
 
       {warn && (
         <View style={st.warn}>
-          <Text style={st.warnTitle}>Antes de empezar</Text>
+          <Text style={st.warnTitle}>{tr('Antes de empezar', 'Before you start')}</Text>
           <Text style={st.warnText}>
-            Esta sesión tiene imágenes en movimiento lento. No tienen destellos ni parpadeos, pero si tienes epilepsia o eres sensible a la luz, elige la opción que te haga sentir más segura.
+            {tr(
+              'Esta sesión tiene imágenes en movimiento lento. No tienen destellos ni parpadeos, pero si tienes epilepsia o eres sensible a la luz, elige la opción que te haga sentir más segura.',
+              'This session has slowly moving images. They have no flashes or flicker, but if you have epilepsy or are sensitive to light, choose the option that feels safest for you.',
+            )}
           </Text>
           {[
-            { mode: 'normal' as const, label: 'Ver visuales', sub: 'Movimiento lento y suave' },
-            { mode: 'suave' as const, label: 'Modo suave', sub: 'Más lento, menos movimiento y menos contraste' },
-            { mode: 'audio' as const, label: 'Solo audio', sub: 'Pantalla oscura, sin imágenes' },
+            { mode: 'normal' as const, label: tr('Ver visuales', 'Show visuals'), sub: tr('Movimiento lento y suave', 'Slow, gentle movement') },
+            { mode: 'suave' as const, label: tr('Modo suave', 'Gentle mode'), sub: tr('Más lento, menos movimiento y menos contraste', 'Slower, less movement and less contrast') },
+            { mode: 'audio' as const, label: tr('Solo audio', 'Audio only'), sub: tr('Pantalla oscura, sin imágenes', 'Dark screen, no images') },
           ].map((o) => (
             <Pressable
               key={o.mode}
@@ -222,13 +226,13 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
               <Text style={st.warnBtnSub}>{o.sub}</Text>
             </Pressable>
           ))}
-          <Text style={st.warnSmall}>Puedes cambiarlo cuando quieras en Mi espacio.</Text>
+          <Text style={st.warnSmall}>{tr('Puedes cambiarlo cuando quieras en Mi espacio.', 'You can change this anytime in My space.')}</Text>
         </View>
       )}
 
       {dim && (
-        <Pressable style={st.dim} onPress={() => setDim(false)} accessibilityLabel="Mostrar la pantalla">
-          <Text style={st.dimText}>Sigue sonando. Toca para ver.</Text>
+        <Pressable style={st.dim} onPress={() => setDim(false)} accessibilityLabel={tr('Mostrar la pantalla', 'Show the screen')}>
+          <Text style={st.dimText}>{tr('Sigue sonando. Toca para ver.', 'Still playing. Tap to see.')}</Text>
         </Pressable>
       )}
     </LinearGradient>

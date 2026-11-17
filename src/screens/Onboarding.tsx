@@ -3,11 +3,12 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chip, Cta, LinkButton, Logo, Stepper } from '../components/ui';
-import { GOALS } from '../content';
+import { GOALS, goalLabel } from '../content';
 import { addDays, addMinutes, defaultExamDate } from '../dates';
 import { scheduleBedtimeReminder } from '../notifications';
 import { formatDate, todayKey, useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import { getLang, tr } from '../i18n';
 
 export default function Onboarding({ onDone }: { onDone: () => void }) {
   const { s, update } = useSettings();
@@ -38,25 +39,33 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
               <Logo size={104} />
             </View>
             <Text style={st.brand}>NeuroTrance</Text>
-            <Text style={[st.p, { textAlign: 'center' }]}>Tu lugar tranquilo para estudiar, dormir bien y llegar en calma a tus evaluaciones.</Text>
+            <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
+              {[
+                { k: 'es' as const, l: 'Español' },
+                { k: 'en' as const, l: 'English' },
+              ].map((o) => (
+                <Chip key={o.k} label={o.l} on={getLang() === o.k} onPress={() => update({ lang: o.k })} />
+              ))}
+            </View>
+            <Text style={[st.p, { textAlign: 'center' }]}>{tr('Tu lugar tranquilo para estudiar, dormir bien y llegar en calma a tus evaluaciones.', 'Your quiet place to study, sleep well and walk into your exams feeling calm.')}</Text>
           </>
         )}
         {step === 1 && (
           <>
-            <Text style={st.h}>¿Qué te cuesta más en estos días?</Text>
-            <Text style={st.p}>Elige todas las que quieras. Así te mostramos primero lo que más te sirve.</Text>
+            <Text style={st.h}>{tr('¿Qué te cuesta más en estos días?', 'What is hardest for you these days?')}</Text>
+            <Text style={st.p}>{tr('Elige todas las que quieras. Así te mostramos primero lo que más te sirve.', 'Choose as many as you like. We will show you what helps you most first.')}</Text>
             <View style={st.chips}>
               {GOALS.map((g) => (
-                <Chip key={g} label={g} on={goals.includes(g)} onPress={() => setGoals(goals.includes(g) ? goals.filter((x) => x !== g) : [...goals, g])} />
+                <Chip key={g} label={goalLabel(g)} on={goals.includes(g)} onPress={() => setGoals(goals.includes(g) ? goals.filter((x) => x !== g) : [...goals, g])} />
               ))}
             </View>
           </>
         )}
         {step === 2 && (
           <>
-            <Text style={st.h}>Preparemos tu próxima evaluación</Text>
+            <Text style={st.h}>{tr('Preparemos tu próxima evaluación', 'Let us get ready for your next exam')}</Text>
             <Stepper
-              label="¿Cuándo es tu próxima evaluación?"
+              label={tr('¿Cuándo es tu próxima evaluación?', 'When is your next exam?')}
               value={formatDate(exam)}
               onMinus={() => {
                 const d = addDays(exam, -1);
@@ -64,13 +73,13 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
               }}
               onPlus={() => setExam(addDays(exam, 1))}
             />
-            <Stepper label="¿A qué hora te acuestas?" value={bed} onMinus={() => setBed(addMinutes(bed, -15))} onPlus={() => setBed(addMinutes(bed, 15))} />
-            <Text style={st.p}>Te avisaremos 15 minutos antes para que empieces a bajar el ritmo.</Text>
+            <Stepper label={tr('¿A qué hora te acuestas?', 'What time do you go to bed?')} value={bed} onMinus={() => setBed(addMinutes(bed, -15))} onPlus={() => setBed(addMinutes(bed, 15))} />
+            <Text style={st.p}>{tr('Te avisaremos 15 minutos antes para que empieces a bajar el ritmo.', 'We will remind you 15 minutes before, so you can start winding down.')}</Text>
           </>
         )}
       </ScrollView>
-      <Cta label={step === 0 ? 'Empezar' : step === 1 ? 'Siguiente' : 'Entrar a NeuroTrance'} onPress={next} />
-      {step < 2 ? <LinkButton label="Saltar" onPress={finish} /> : <View style={{ height: 40 }} />}
+      <Cta label={step === 0 ? tr('Empezar', 'Start') : step === 1 ? tr('Siguiente', 'Next') : tr('Entrar a NeuroTrance', 'Enter NeuroTrance')} onPress={next} />
+      {step < 2 ? <LinkButton label={tr('Saltar', 'Skip')} onPress={finish} /> : <View style={{ height: 40 }} />}
     </LinearGradient>
   );
 }

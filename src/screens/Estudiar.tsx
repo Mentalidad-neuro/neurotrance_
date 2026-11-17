@@ -7,6 +7,7 @@ import { ESTUDIO, LONG_REST, POMODOROS, Track } from '../content';
 import { cancelPomodoroEnd, schedulePomodoroEnd } from '../notifications';
 import { useAccess, useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import { tr } from '../i18n';
 
 type Phase = 'idle' | 'focus' | 'rest';
 const BLOCKS = 4;
@@ -81,8 +82,8 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
     setRunning(true);
     schedulePomodoroEnd(
       new Date(end),
-      p === 'focus' ? 'Bloque terminado' : 'Fin del descanso',
-      p === 'focus' ? 'Muy bien. Levántate, toma agua y respira.' : 'Volvamos a concentrarnos.',
+      p === 'focus' ? tr('Bloque terminado', 'Block finished') : tr('Fin del descanso', 'Break is over'),
+      p === 'focus' ? tr('Muy bien. Levántate, toma agua y respira.', 'Well done. Stand up, drink some water and breathe.') : tr('Volvamos a concentrarnos.', 'Let us get back to focusing.'),
     );
   }
 
@@ -106,7 +107,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
       const end = Date.now() + left;
       setEndAt(end);
       setRunning(true);
-      schedulePomodoroEnd(new Date(end), phase === 'focus' ? 'Bloque terminado' : 'Fin del descanso', 'Toca para volver a NeuroTrance.');
+      schedulePomodoroEnd(new Date(end), phase === 'focus' ? tr('Bloque terminado', 'Block finished') : tr('Fin del descanso', 'Break is over'), tr('Toca para volver a NeuroTrance.', 'Tap to go back to NeuroTrance.'));
     }
   }
 
@@ -135,12 +136,12 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
   }
 
   const progress = phase === 'idle' ? 0 : 1 - Math.max(0, remaining) / phaseTotal;
-  const label = phase === 'idle' ? 'Listo para empezar' : phase === 'focus' ? 'Concentración' : restMin === LONG_REST ? 'Descanso largo' : 'Descanso';
+  const label = phase === 'idle' ? tr('Listo para empezar', 'Ready to start') : phase === 'focus' ? tr('Concentración', 'Focus') : restMin === LONG_REST ? tr('Descanso largo', 'Long break') : tr('Descanso', 'Break');
 
   return (
     <View>
-      <Eyebrow color={colors.teal}>Concentración</Eyebrow>
-      <H2>Estudiar con foco</H2>
+      <Eyebrow color={colors.teal}>{tr('Concentración', 'Focus')}</Eyebrow>
+      <H2>{tr('Estudiar con foco', 'Focused study')}</H2>
 
       <View style={[st.card, phase === 'rest' && { backgroundColor: colors.success }]}>
         <Text style={[st.phase, phase === 'rest' && { color: colors.teal }]}>{label}</Text>
@@ -148,28 +149,28 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
           {mmss(phase === 'idle' ? plan.focus * 60000 : remaining)}
         </Text>
         <Text style={st.blocks}>
-          Bloque {block} de {BLOCKS}
-          {phase === 'rest' ? ' · levántate y toma agua' : sound && phase === 'focus' ? ` · ${sound.title}` : ''}
+          {tr(`Bloque ${block} de ${BLOCKS}`, `Block ${block} of ${BLOCKS}`)}
+          {phase === 'rest' ? tr(' · levántate y toma agua', ' · stand up and drink water') : sound && phase === 'focus' ? ` · ${sound.title}` : ''}
         </Text>
         <View style={st.bar}>
           <View style={[st.barFill, { width: `${progress * 100}%` }, phase === 'rest' && { backgroundColor: colors.teal }]} />
         </View>
         <View style={st.btnRow}>
           <Pressable onPress={running ? pause : start} style={st.main} accessibilityRole="button">
-            <Text style={st.mainText}>{running ? 'Pausar' : phase === 'idle' ? 'Empezar' : 'Seguir'}</Text>
+            <Text style={st.mainText}>{running ? tr('Pausar', 'Pause') : phase === 'idle' ? tr('Empezar', 'Start') : tr('Seguir', 'Resume')}</Text>
           </Pressable>
           {phase !== 'idle' && (
             <Pressable onPress={phase === 'rest' ? nextPhase : reset} style={st.second} accessibilityRole="button">
-              <Text style={st.secondText}>{phase === 'rest' ? 'Saltar descanso' : 'Reiniciar'}</Text>
+              <Text style={st.secondText}>{phase === 'rest' ? tr('Saltar descanso', 'Skip break') : tr('Reiniciar', 'Reset')}</Text>
             </Pressable>
           )}
         </View>
       </View>
 
-      <H3>Lo que voy a estudiar</H3>
+      <H3>{tr('Lo que voy a estudiar', 'What I will study')}</H3>
       <StudyList />
 
-      <H3>Tiempo de concentración</H3>
+      <H3>{tr('Tiempo de concentración', 'Focus time')}</H3>
       <View style={st.chips}>
         {POMODOROS.map((p) => {
           const on = p.focus === plan.focus;
@@ -182,10 +183,13 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
         })}
       </View>
       <Hint>
-        Descanso de {plan.rest} minutos entre bloques y de {LONG_REST} minutos después del cuarto. Suena una campana suave al cambiar.
+        {tr(
+          `Descanso de ${plan.rest} minutos entre bloques y de ${LONG_REST} minutos después del cuarto. Suena una campana suave al cambiar.`,
+          `A ${plan.rest}-minute break between blocks and ${LONG_REST} minutes after the fourth. A soft bell rings at each change.`,
+        )}
       </Hint>
 
-      <H3>Sonido para concentrarte</H3>
+      <H3>{tr('Sonido para concentrarte', 'Sound to help you focus')}</H3>
       <View style={{ gap: 8 }}>
         {ESTUDIO.map((t) => {
           const on = t.id === soundId;
@@ -199,7 +203,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
                   <Text style={st.itemTitle}>{t.title}</Text>
                   {t.tag ? <Pill text={t.tag} /> : null}
-                  {lockedNow ? <Pill text="suscripción" soft /> : null}
+                  {lockedNow ? <Pill text={tr('suscripción', 'subscription')} soft /> : null}
                 </View>
                 <Text style={st.itemSub}>{t.subtitle}</Text>
               </View>
@@ -211,11 +215,11 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
           <View style={st.ic}>
             <Text style={st.icText}>–</Text>
           </View>
-          <Text style={[st.itemTitle, { flex: 1 }]}>Sin sonido</Text>
+          <Text style={[st.itemTitle, { flex: 1 }]}>{tr('Sin sonido', 'No sound')}</Text>
           <Text style={st.radio}>{soundId === null ? '●' : '○'}</Text>
         </Pressable>
       </View>
-      <Hint>Las ondas binaurales funcionan con audífonos: cada oído recibe un tono distinto y el cerebro percibe la diferencia.</Hint>
+      <Hint>{tr('Las ondas binaurales funcionan con audífonos: cada oído recibe un tono distinto y el cerebro percibe la diferencia.', 'Binaural waves work with headphones: each ear hears a different tone and the brain perceives the difference.')}</Hint>
     </View>
   );
 }

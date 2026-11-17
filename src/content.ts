@@ -1,4 +1,6 @@
 // Todo el contenido de audio de la app en un solo lugar.
+import { bilingual, tr } from './i18n';
+
 // "free: true" = disponible sin suscripción. El resto queda para la suscripción.
 
 export type Track = {
@@ -15,7 +17,7 @@ export type Track = {
 };
 
 export const MEDITACIONES: Track[] = [
-  {
+  bilingual({
     id: 'med-1',
     title: 'La noche anterior',
     subtitle: 'Para dormir tranquila antes de la evaluación',
@@ -24,8 +26,8 @@ export const MEDITACIONES: Track[] = [
     duration: '3:50',
     free: true,
     icon: '1',
-  },
-  {
+  }, { title: 'The night before', subtitle: 'To sleep calmly before your exam', source: require('../assets/audio/meditaciones/en/1-night-before.mp3'), duration: '3:36' }),
+  bilingual({
     id: 'med-2',
     title: 'Antes de entrar',
     subtitle: 'En la fila o sentada esperando',
@@ -34,8 +36,8 @@ export const MEDITACIONES: Track[] = [
     duration: '2:58',
     free: true,
     icon: '2',
-  },
-  {
+  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '2:48' }),
+  bilingual({
     id: 'med-3',
     title: 'Si me bloqueo',
     subtitle: 'Cuando una pregunta te paraliza',
@@ -44,8 +46,8 @@ export const MEDITACIONES: Track[] = [
     duration: '2:35',
     free: false,
     icon: '3',
-  },
-  {
+  }, { title: 'If my mind goes blank', subtitle: 'When a question freezes you', source: require('../assets/audio/meditaciones/en/3-mind-goes-blank.mp3'), duration: '2:32' }),
+  bilingual({
     id: 'med-4',
     title: 'Entre pruebas',
     subtitle: 'Para soltar la anterior y empezar de nuevo',
@@ -54,11 +56,11 @@ export const MEDITACIONES: Track[] = [
     duration: '2:48',
     free: false,
     icon: '4',
-  },
+  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '2:42' }),
 ];
 
 export const SONIDOS: Track[] = [
-  {
+  bilingual({
     id: 'snd-lluvia',
     title: 'Lluvia suave',
     subtitle: 'Tapa los ruidos de la casa',
@@ -67,8 +69,8 @@ export const SONIDOS: Track[] = [
     loop: true,
     free: true,
     icon: '≋',
-  },
-  {
+  }, { title: 'Gentle rain', subtitle: 'Covers the noises in the house' }),
+  bilingual({
     id: 'snd-rosa',
     title: 'Ruido rosa',
     subtitle: 'Acompaña el sueño profundo, donde se guarda lo estudiado',
@@ -78,8 +80,8 @@ export const SONIDOS: Track[] = [
     free: true,
     tag: 'memoria',
     icon: '∿',
-  },
-  {
+  }, { title: 'Pink noise', subtitle: 'Supports deep sleep, when what you studied is stored', tag: 'memory' }),
+  bilingual({
     id: 'snd-olas',
     title: 'Olas del mar',
     subtitle: 'Ritmo lento para bajar la respiración',
@@ -88,8 +90,8 @@ export const SONIDOS: Track[] = [
     loop: true,
     free: false,
     icon: '◠',
-  },
-  {
+  }, { title: 'Ocean waves', subtitle: 'A slow rhythm to slow your breathing' }),
+  bilingual({
     id: 'snd-delta',
     title: 'Ondas delta',
     subtitle: 'Tono binaural de 2 Hz. Usa audífonos',
@@ -99,11 +101,11 @@ export const SONIDOS: Track[] = [
     free: false,
     tag: 'audífonos',
     icon: '◎',
-  },
+  }, { title: 'Delta waves', subtitle: '2 Hz binaural tone. Use headphones', tag: 'headphones' }),
 ];
 
 export const HIPNOSIS: Track[] = [
-  {
+  bilingual({
     id: 'hip-sueno',
     title: 'Dormir profundo',
     subtitle: 'Para quedarte dormida sin darle vueltas',
@@ -111,8 +113,8 @@ export const HIPNOSIS: Track[] = [
     duration: '20 min',
     free: false,
     icon: '☾',
-  },
-  {
+  }, { title: 'Deep sleep', subtitle: 'To fall asleep without overthinking' }),
+  bilingual({
     id: 'hip-ansiedad',
     title: 'Soltar la ansiedad',
     subtitle: 'Calma ante la prueba',
@@ -120,8 +122,8 @@ export const HIPNOSIS: Track[] = [
     duration: '15 min',
     free: false,
     icon: '○',
-  },
-  {
+  }, { title: 'Release anxiety', subtitle: 'Calm before the exam' }),
+  bilingual({
     id: 'hip-memoria',
     title: 'Mi mente recuerda',
     subtitle: 'Confianza en tu memoria',
@@ -129,19 +131,19 @@ export const HIPNOSIS: Track[] = [
     duration: '18 min',
     free: false,
     icon: '✦',
-  },
+  }, { title: 'My mind remembers', subtitle: 'Trust in your memory' }),
 ];
 
 // Visuales para entrar en trance, con fondo de ondas theta (estado previo al sueño).
 export const TRANCE: (Track & { visual: 'mandala' | 'luz' | 'agua' | 'estrellas' })[] = [
-  { id: 'tr-mandala', title: 'Mandala que respira', subtitle: 'Sigue su ritmo: crece al inhalar, se recoge al exhalar', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: true, icon: '✿', visual: 'mandala' },
-  { id: 'tr-luz', title: 'Punto de luz', subtitle: 'Fija la mirada y deja que los párpados pesen', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: true, icon: '◉', visual: 'luz' },
-  { id: 'tr-agua', title: 'Ondas en el agua', subtitle: 'Cada onda se lleva un pensamiento', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: false, icon: '◌', visual: 'agua' },
-  { id: 'tr-estrellas', title: 'Cielo que se apaga', subtitle: 'Las estrellas se encienden y apagan muy lento', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: false, icon: '✧', visual: 'estrellas' },
+  bilingual({ id: 'tr-mandala', title: 'Mandala que respira', subtitle: 'Sigue su ritmo: crece al inhalar, se recoge al exhalar', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: true, icon: '✿', visual: 'mandala' }, { title: 'Breathing mandala', subtitle: 'Follow its rhythm: it grows as you breathe in and folds as you breathe out' }),
+  bilingual({ id: 'tr-luz', title: 'Punto de luz', subtitle: 'Fija la mirada y deja que los párpados pesen', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: true, icon: '◉', visual: 'luz' }, { title: 'Point of light', subtitle: 'Rest your gaze and let your eyelids grow heavy' }),
+  bilingual({ id: 'tr-agua', title: 'Ondas en el agua', subtitle: 'Cada onda se lleva un pensamiento', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: false, icon: '◌', visual: 'agua' }, { title: 'Ripples on water', subtitle: 'Each ripple carries a thought away' }),
+  bilingual({ id: 'tr-estrellas', title: 'Cielo que se apaga', subtitle: 'Las estrellas se encienden y apagan muy lento', kind: 'hipnosis', source: require('../assets/audio/hipnosis/ondas-theta.mp3'), loop: true, free: false, icon: '✧', visual: 'estrellas' }, { title: 'Fading sky', subtitle: 'The stars light up and fade very slowly' }),
 ];
 
 export const ESTUDIO: Track[] = [
-  {
+  bilingual({
     id: 'est-beta',
     title: 'Ondas beta',
     subtitle: 'Atención sostenida para leer y resolver ejercicios',
@@ -151,8 +153,8 @@ export const ESTUDIO: Track[] = [
     free: true,
     tag: 'audífonos',
     icon: 'β',
-  },
-  {
+  }, { title: 'Beta waves', subtitle: 'Sustained attention for reading and solving problems', tag: 'headphones' }),
+  bilingual({
     id: 'est-marron',
     title: 'Ruido marrón',
     subtitle: 'Tapa las distracciones sin cansar el oído',
@@ -161,8 +163,8 @@ export const ESTUDIO: Track[] = [
     loop: true,
     free: true,
     icon: '≋',
-  },
-  {
+  }, { title: 'Brown noise', subtitle: 'Covers distractions without tiring your ears' }),
+  bilingual({
     id: 'est-gamma',
     title: 'Ondas gamma 40 Hz',
     subtitle: 'Para activar la mente al repasar y memorizar',
@@ -172,8 +174,8 @@ export const ESTUDIO: Track[] = [
     free: false,
     tag: 'audífonos',
     icon: 'γ',
-  },
-  {
+  }, { title: 'Gamma waves 40 Hz', subtitle: 'To activate your mind while reviewing and memorizing', tag: 'headphones' }),
+  bilingual({
     id: 'est-alfa',
     title: 'Ondas alfa',
     subtitle: 'Estudio tranquilo, sin tensión',
@@ -183,8 +185,8 @@ export const ESTUDIO: Track[] = [
     free: false,
     tag: 'audífonos',
     icon: 'α',
-  },
-  {
+  }, { title: 'Alpha waves', subtitle: 'Calm study, without tension', tag: 'headphones' }),
+  bilingual({
     id: 'est-lluvia',
     title: 'Lluvia para estudiar',
     subtitle: 'Un fondo suave y parejo',
@@ -193,7 +195,7 @@ export const ESTUDIO: Track[] = [
     loop: true,
     free: false,
     icon: '☂',
-  },
+  }, { title: 'Rain for studying', subtitle: 'A soft, steady background' }),
 ];
 
 // Pomodoro: minutos de concentración y su descanso.
@@ -208,4 +210,13 @@ export const LONG_REST = 15; // después de 4 bloques
 export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS, ...TRANCE, ...ESTUDIO];
 export const findTrack = (id: string) => ALL_TRACKS.find((t) => t.id === id);
 
+// Se guardan en español; goalLabel() muestra el texto en el idioma activo.
 export const GOALS = ['Dormir', 'Ansiedad', 'Concentrarme', 'Recordar lo estudiado', 'Bloqueo en la prueba'];
+const GOALS_EN: Record<string, string> = {
+  Dormir: 'Sleep',
+  Ansiedad: 'Anxiety',
+  Concentrarme: 'Focus',
+  'Recordar lo estudiado': 'Remember what I studied',
+  'Bloqueo en la prueba': 'Mind going blank in exams',
+};
+export const goalLabel = (g: string) => tr(g, GOALS_EN[g] ?? g);

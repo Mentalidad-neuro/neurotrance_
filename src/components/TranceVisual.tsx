@@ -3,6 +3,7 @@ import { AccessibilityInfo, Animated, Easing, StyleSheet, View } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Defs, Ellipse, G, Mask, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { colors } from '../theme';
+import { bilingual } from '../i18n';
 
 // Visuales para acompañar el trance. Reglas de seguridad para fotosensibilidad (WCAG 2.3.1):
 // sin destellos ni cambios bruscos de brillo, todo cambio dura 4 segundos o más,
@@ -11,11 +12,11 @@ import { colors } from '../theme';
 
 export type VisualKind = 'esfera' | 'mandala' | 'luz' | 'agua' | 'estrellas';
 export const VISUALS: { key: VisualKind; label: string }[] = [
-  { key: 'esfera', label: 'Esfera' },
-  { key: 'mandala', label: 'Mandala' },
-  { key: 'luz', label: 'Luz' },
-  { key: 'agua', label: 'Agua' },
-  { key: 'estrellas', label: 'Estrellas' },
+  bilingual({ key: 'esfera' as VisualKind, label: 'Esfera' }, { label: 'Sphere' }),
+  bilingual({ key: 'mandala' as VisualKind, label: 'Mandala' }, { label: 'Mandala' }),
+  bilingual({ key: 'luz' as VisualKind, label: 'Luz' }, { label: 'Light' }),
+  bilingual({ key: 'agua' as VisualKind, label: 'Agua' }, { label: 'Water' }),
+  bilingual({ key: 'estrellas' as VisualKind, label: 'Estrellas' }, { label: 'Stars' }),
 ];
 
 const SIZE = 240;

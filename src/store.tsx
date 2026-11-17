@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Lang, deviceLang, getLang, setLang } from './i18n';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 export type Settings = {
@@ -16,6 +17,7 @@ export type Settings = {
   visualMode: 'normal' | 'suave' | 'audio'; // accesibilidad para fotosensibilidad
   photoWarned: boolean;
   studyList: { id: string; text: string; done: boolean }[];
+  lang: Lang | null; // null = idioma del teléfono
   // minutos escuchados por día: { '2026-11-17': 12.5 }
   listened: Record<string, number>;
 };
@@ -35,6 +37,7 @@ const DEFAULTS: Settings = {
   visualMode: 'normal',
   photoWarned: false,
   studyList: [],
+  lang: null,
   listened: {},
 };
 
@@ -64,6 +67,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       .then((raw) => {
         const saved = raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
         if (!saved.firstOpen) saved.firstOpen = Date.now();
+        setLang(saved.lang ?? deviceLang());
         setS(saved);
       })
       .catch(() => {})
@@ -74,7 +78,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     if (ready) AsyncStorage.setItem(KEY, JSON.stringify(s)).catch(() => {});
   }, [s, ready]);
 
-  const update = useCallback((patch: Partial<Settings>) => setS((prev) => ({ ...prev, ...patch })), []);
+  const update = useCallback((patch: Partial<Settings>) => {
+    if (patch.lang !== undefined) setLang(patch.lang ?? deviceLang());
+    setS((prev) => ({ ...prev, ...patch }));
+  }, []);
   const toggleFavorite = useCallback(
     (id: string) =>
       setS((prev) => ({
@@ -109,11 +116,12 @@ export function daysUntil(dateStr: string | null) {
   return Math.max(0, d);
 }
 
+const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 export function formatDate(dateStr: string | null) {
-  if (!dateStr) return 'Sin fecha';
+  if (!dateStr) return getLang() === 'en' ? 'No date' : 'Sin fecha';
   const [, m, d] = dateStr.split('-').map(Number);
-  return `${d} de ${MONTHS[m - 1]}`;
+  return getLang() === 'en' ? `${MONTHS_EN[m - 1]} ${d}` : `${d} de ${MONTHS[m - 1]}`;
 }
 
 // Acceso a cada audio: suscripción, prueba gratis vigente o audio gratis (si así está configurado).

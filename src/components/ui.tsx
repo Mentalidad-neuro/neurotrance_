@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { colors, fonts } from '../theme';
 import type { Track } from '../content';
+import { tr } from '../i18n';
 
 export function Eyebrow({ children, color }: { children: React.ReactNode; color?: string }) {
   return <Text style={[s.eyebrow, color ? { color } : null]}>{children}</Text>;
@@ -52,7 +53,7 @@ export function TrackRow({ t, locked, onPress, favorite }: { t: Track; locked: b
           <Text style={s.itemTitle}>{t.title}</Text>
           {favorite ? <Text style={{ color: colors.moon }}>♥</Text> : null}
           {t.tag ? <Pill text={t.tag} /> : null}
-          {soon ? <Pill text="por grabar" soft /> : locked ? <Pill text="suscripción" soft /> : null}
+          {soon ? <Pill text={tr('por grabar', 'coming soon')} soft /> : locked ? <Pill text={tr('suscripción', 'subscription')} soft /> : null}
         </View>
         <Text style={s.itemSub}>{t.subtitle}</Text>
       </View>

@@ -20,12 +20,13 @@ import Profile from './src/screens/Profile';
 import Estudiar from './src/screens/Estudiar';
 import Player from './src/screens/Player';
 import Paywall from './src/screens/Paywall';
+import { tr } from './src/i18n';
 
-const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
-  { key: 'inicio', label: 'Inicio', icon: <Path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z" /> },
+const TABS: { key: Tab; label: () => string; icon: React.ReactNode }[] = [
+  { key: 'inicio', label: () => tr('Inicio', 'Home'), icon: <Path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z" /> },
   {
     key: 'estudiar',
-    label: 'Estudiar',
+    label: () => tr('Estudiar', 'Study'),
     icon: (
       <>
         <Path d="M4 6.5C6.5 5 9.5 5 12 6.5v12C9.5 17 6.5 17 4 18.5z" />
@@ -33,10 +34,10 @@ const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
       </>
     ),
   },
-  { key: 'dormir', label: 'Dormir', icon: <Path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /> },
+  { key: 'dormir', label: () => tr('Dormir', 'Sleep'), icon: <Path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /> },
   {
     key: 'hipnosis',
-    label: 'Hipnosis',
+    label: () => tr('Hipnosis', 'Hypnosis'),
     icon: (
       <>
         <Circle cx={12} cy={12} r={8} />
@@ -46,7 +47,7 @@ const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
   },
   {
     key: 'evaluaciones',
-    label: 'Evaluaciones',
+    label: () => tr('Evaluaciones', 'Exams'),
     icon: (
       <>
         <Path d="M5 4h11l3 3v13H5z" />
@@ -124,7 +125,7 @@ function Main() {
                 {t.icon}
               </Svg>
               <Text style={[st.tabText, { color: c }]} numberOfLines={1}>
-                {t.label}
+                {t.label()}
               </Text>
             </Pressable>
           );

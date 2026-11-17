@@ -21,6 +21,28 @@ const TIMER_OPTIONS = () => [
 const FADE_SECONDS = 30;
 const CUES = () => [tr('Inhala…', 'Breathe in…'), tr('Sostén…', 'Hold…'), tr('Exhala…', 'Breathe out…')];
 
+// Íconos simples para cada sonido de fondo.
+function BgIcon({ k, color }: { k: string; color: string }) {
+  const p = { stroke: color, strokeWidth: 1.8, fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const d: Record<string, string[]> = {
+    ninguno: ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', 'M5.6 5.6l12.8 12.8'],
+    lluvia: ['M7 14h10a4 4 0 0 0 .4-8A5.5 5.5 0 0 0 7 7a3.5 3.5 0 0 0 0 7', 'M8 17l-1 3', 'M12 17l-1 3', 'M16 17l-1 3'],
+    agua: ['M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z'],
+    mar: ['M2 16c3 0 4.5-2 5.5-5s3-6 7-6c3 0 5 1.8 5 3.8c0 1.8-1.8 2.7-3.3 2.2', 'M2 20c2.5-1.5 4.5-1.5 7 0s4.5 1.5 7 0 4.5-1.5 6 0'],
+    bosque: ['M12 3l6 9h-3l4 6H5l4-6H6z', 'M12 18v3'],
+    cuenco: ['M3 11h18a9 7 0 0 1-18 0z', 'M9 21h6', 'M12 7v1', 'M8.5 6.5l.6.8', 'M15.5 6.5l-.6.8'],
+    ondas: ['M2 12c1.5-5 3-5 4.5 0s3 5 4.5 0 3-5 4.5 0 3 5 4.5 0 1.5-3 2 0'],
+  };
+  const paths = d[k] ?? d.ondas;
+  return (
+    <Svg width={16} height={16} viewBox="0 0 24 24">
+      {paths.map((x, i) => (
+        <Path key={i} d={x} {...p} />
+      ))}
+    </Svg>
+  );
+}
+
 const fmt = (sec: number) => (isFinite(sec) && sec > 0 ? `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}` : '0:00');
 
 export default function Player({ track, onClose }: { track: Track & { visual?: VisualKind }; onClose: () => void }) {
@@ -254,7 +276,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
             {bgOptions.map((b) => {
               const on = bgKey === b.key;
               return (
-                <Pressable key={b.key} onPress={() => chooseBg(b.key)} style={[st.tBtn, on && st.tBtnOn]} accessibilityRole="radio" accessibilityState={{ selected: on }}>
+                <Pressable key={b.key} onPress={() => chooseBg(b.key)} style={[st.tBtn, st.bgChip, on && st.tBtnOn]} accessibilityRole="radio" accessibilityState={{ selected: on }}>
+                  <BgIcon k={b.binaural ? 'ondas' : b.key} color={on ? colors.sky : colors.muted} />
                   <Text style={[st.tText, on && { color: colors.sky }]}>{b.label()}</Text>
                 </Pressable>
               );
@@ -353,6 +376,7 @@ const st = StyleSheet.create({
   tText: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.muted },
   tip: { textAlign: 'center', color: colors.blue, fontFamily: fonts.body, fontSize: 12, marginTop: 12 },
   bgBox: { marginTop: 4 },
+  bgChip: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   bgRow: { gap: 8, paddingHorizontal: 4, paddingTop: 8 },
   volRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12, paddingHorizontal: 20 },
   volBtn: { width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.card },

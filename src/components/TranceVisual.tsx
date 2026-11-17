@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Circle, Defs, Ellipse, G, Mask, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, Ellipse, G, Mask, Polygon, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { colors } from '../theme';
 import { bilingual } from '../i18n';
 
@@ -13,7 +13,7 @@ import { bilingual } from '../i18n';
 export type VisualKind = 'esfera' | 'mandala' | 'luz' | 'agua' | 'estrellas';
 export const VISUALS: { key: VisualKind; label: string }[] = [
   bilingual({ key: 'esfera' as VisualKind, label: 'Esfera' }, { label: 'Sphere' }),
-  bilingual({ key: 'mandala' as VisualKind, label: 'Mandala' }, { label: 'Mandala' }),
+  bilingual({ key: 'mandala' as VisualKind, label: 'Caleidoscopio' }, { label: 'Kaleidoscope' }),
   bilingual({ key: 'luz' as VisualKind, label: 'Luz' }, { label: 'Light' }),
   bilingual({ key: 'agua' as VisualKind, label: 'Agua' }, { label: 'Water' }),
   bilingual({ key: 'estrellas' as VisualKind, label: 'Estrellas' }, { label: 'Stars' }),
@@ -67,6 +67,7 @@ export default function TranceVisual({ kind, playing, safe }: { kind: VisualKind
 
   useLoop(breath, 8000 * slow, active);
   useLoop(spin, 90000 * slow, active && kind === 'mandala', 0, 1, false);
+  useLoop(w1, 24000 * slow, active && kind === 'mandala'); // cruce lento de colores
   useLoop(w1, 9000 * slow, active && kind === 'agua', 0, 1, false);
   useLoop(w2, 11000 * slow, active && (kind === 'agua' || kind === 'estrellas'), 0, 1, kind === 'estrellas');
   useLoop(w3, 13000 * slow, active && (kind === 'agua' || kind === 'estrellas'), 0, 1, kind === 'estrellas');
@@ -90,23 +91,62 @@ export default function TranceVisual({ kind, playing, safe }: { kind: VisualKind
   }
 
   if (kind === 'mandala') {
-    const rot = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
-    const rotBack = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-360deg'] });
-    const petals = (n: number, rx: number, ry: number, dist: number, color: string, op: number) =>
-      Array.from({ length: n }, (_, i) => (
-        <Ellipse key={i} cx={120} cy={120 - dist} rx={rx} ry={ry} fill={color} opacity={op * dim} transform={`rotate(${(360 / n) * i} 120 120)`} />
+    // Caleidoscopio: 12 espejos. Tres capas giran a distinto ritmo y en sentidos opuestos,
+    // así el dibujo cambia de forma muy lenta (una vuelta tarda 1,5 a 3 minutos). Sin destellos.
+    const A = colors.orbA ?? colors.moon;
+    const B = colors.orbB ?? colors.lilac;
+    const turn = (mult: number) => spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', `${360 * mult}deg`] });
+    const mirror = (key: string, shapes: React.ReactNode) =>
+      Array.from({ length: 12 }, (_, i) => (
+        <G key={key + i} transform={`rotate(${30 * i} 120 120)`}>
+          {shapes}
+          <G transform="translate(240 0) scale(-1 1)">{shapes}</G>
+        </G>
       ));
+    const layer = (key: string, shapes: React.ReactNode, mult: number, op: Animated.AnimatedInterpolation<number> | number = 1) => (
+      <Animated.View key={key} style={[StyleSheet.absoluteFill, { opacity: op, transform: [{ rotate: turn(mult) }] }]}>
+        <Svg width={SIZE} height={SIZE} viewBox="0 0 240 240">
+          <Defs>
+            <ClipPath id={'c' + key}>
+              <Circle cx={120} cy={120} r={118} />
+            </ClipPath>
+          </Defs>
+          <G clipPath={`url(#c${key})`} opacity={dim}>{mirror(key, shapes)}</G>
+        </Svg>
+      </Animated.View>
+    );
+    const fadeA = w1.interpolate({ inputRange: [0, 1], outputRange: [0.85, 0.35] });
+    const fadeB = w1.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0.85] });
     return (
       <Animated.View style={[st.box, { transform: [{ scale }] }]}>
-        <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate: rot }] }]}>
-          <Svg width={SIZE} height={SIZE} viewBox="0 0 240 240">{petals(12, 16, 46, 62, colors.orbB ?? colors.lilac, 0.45)}</Svg>
-        </Animated.View>
-        <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate: rotBack }] }]}>
-          <Svg width={SIZE} height={SIZE} viewBox="0 0 240 240">
-            {petals(8, 12, 32, 36, colors.orbA ?? colors.moon, 0.55)}
-            <Circle cx={120} cy={120} r={16} fill={colors.orbCore} opacity={0.8 * dim} />
-          </Svg>
-        </Animated.View>
+        <View style={[st.kBase, { backgroundColor: colors.card, borderColor: colors.line }]} />
+        {layer(
+          'a',
+          <>
+            <Ellipse cx={132} cy={30} rx={9} ry={26} fill={B} opacity={0.5} transform="rotate(14 132 30)" />
+            <Polygon points="128,62 138,78 128,94 118,78" fill={A} opacity={0.55} />
+          </>,
+          1,
+          fadeA,
+        )}
+        {layer(
+          'b',
+          <>
+            <Ellipse cx={136} cy={52} rx={7} ry={20} fill={colors.teal} opacity={0.4} transform="rotate(-20 136 52)" />
+            <Circle cx={124} cy={14} r={6} fill={A} opacity={0.5} />
+          </>,
+          -0.66,
+          fadeB,
+        )}
+        {layer(
+          'c',
+          <>
+            <Polygon points="120,72 131,84 120,100 109,84" fill={colors.lilac} opacity={0.35} />
+            <Ellipse cx={128} cy={104} rx={4} ry={9} fill={B} opacity={0.55} transform="rotate(25 128 104)" />
+          </>,
+          0.5,
+        )}
+        <View style={[st.kCore, { backgroundColor: colors.orbCore, opacity: 0.85 * dim }]} />
       </Animated.View>
     );
   }
@@ -198,4 +238,6 @@ const st = StyleSheet.create({
   dot: { width: 14, height: 14, borderRadius: 7, backgroundColor: colors.orbCore },
   ring: { position: 'absolute', width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2 },
   drop: { width: 12, height: 12, borderRadius: 6 },
+  kBase: { position: 'absolute', width: 236, height: 236, borderRadius: 118, borderWidth: 1 },
+  kCore: { width: 18, height: 18, borderRadius: 9 },
 });

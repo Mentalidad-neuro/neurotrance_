@@ -13,7 +13,9 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
   const notRecorded = track && !track.source;
   return (
     <LinearGradient colors={['#2c3766', colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
-      <LinkButton label="‹ Volver" onPress={onClose} />
+      <View style={{ alignSelf: 'flex-start' }}>
+        <LinkButton label="‹ Volver" onPress={onClose} />
+      </View>
       <View style={{ alignItems: 'center', marginTop: 30 }}>
         <Logo size={88} />
       </View>

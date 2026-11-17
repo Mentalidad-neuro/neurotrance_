@@ -31,7 +31,12 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
   const [, setTick] = useState(0);
 
   const sound = ESTUDIO.find((t) => t.id === soundId) ?? null;
-  const player = useAudioPlayer(sound?.source ?? null);
+  // Un solo reproductor estable: al cambiar de sonido se reemplaza el archivo dentro del mismo toque (así funciona también en iPhone).
+  const [firstSource] = useState(() => ESTUDIO[0].source ?? null);
+  const player = useAudioPlayer(firstSource);
+  const loaded = useRef<string | null>(ESTUDIO[0].id);
+  const wantSound = useRef(false);
+  const [hearing, setHearing] = useState(false);
   const chime = useAudioPlayer(chimeSource);
   const focusMs = useRef(0);
 
@@ -39,12 +44,32 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
   const phaseTotal = (phase === 'rest' ? restMin : plan.focus) * 60000;
   const remaining = running ? endAt - Date.now() : left;
 
-  // Sonido de fondo solo durante la concentración.
-  useEffect(() => {
+  function playSound(t: Track | null) {
+    if (!t?.source) return;
+    if (loaded.current !== t.id) {
+      player.replace(t.source);
+      loaded.current = t.id;
+    }
     player.loop = true;
-    if (running && phase === 'focus' && sound) player.play();
-    else player.pause();
-  }, [running, phase, sound, player]);
+    player.volume = 1;
+    player.play();
+    wantSound.current = true;
+    setHearing(true);
+  }
+  function stopSound() {
+    player.pause();
+    setHearing(false);
+  }
+
+  // En el descanso el sonido se pausa y vuelve al empezar el siguiente bloque.
+  useEffect(() => {
+    if (!running) return;
+    if (phase === 'rest') stopSound();
+    else if (phase === 'focus' && wantSound.current && sound) playSound(sound);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, running]);
+
+  useEffect(() => () => player.pause(), [player]);
 
   // Reloj.
   useEffect(() => {
@@ -102,6 +127,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
 
   function start() {
     setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true, interruptionMode: 'mixWithOthers' }).catch(() => {});
+    if (sound && phase !== 'rest') playSound(sound);
     if (phase === 'idle') startPhase('focus', plan.focus);
     else {
       const end = Date.now() + left;
@@ -114,6 +140,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
   function pause() {
     setLeft(Math.max(0, endAt - Date.now()));
     setRunning(false);
+    stopSound();
     cancelPomodoroEnd();
   }
 
@@ -122,6 +149,8 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
     setPhase('idle');
     setBlock(1);
     setLeft(plan.focus * 60000);
+    stopSound();
+    wantSound.current = false;
     cancelPomodoroEnd();
   }
 
@@ -132,7 +161,18 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
 
   function chooseSound(t: Track | null) {
     if (t && isLocked(t)) return locked(t);
-    setSoundId(t ? t.id : null);
+    // Tocar el sonido que ya suena lo pausa; tocar otro lo hace sonar de inmediato.
+    if (!t) {
+      setSoundId(null);
+      wantSound.current = false;
+      return stopSound();
+    }
+    if (t.id === soundId && hearing) {
+      wantSound.current = false;
+      return stopSound();
+    }
+    setSoundId(t.id);
+    if (phase !== 'rest') playSound(t);
   }
 
   const progress = phase === 'idle' ? 0 : 1 - Math.max(0, remaining) / phaseTotal;
@@ -207,7 +247,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
                 </View>
                 <Text style={st.itemSub}>{t.subtitle}</Text>
               </View>
-              <Text style={st.radio}>{lockedNow ? '🔒' : on ? '●' : '○'}</Text>
+              <Text style={[st.radio, on && hearing && { color: colors.teal }]}>{lockedNow ? '🔒' : on && hearing ? '♪' : on ? '●' : '○'}</Text>
             </Pressable>
           );
         })}
@@ -219,6 +259,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
           <Text style={st.radio}>{soundId === null ? '●' : '○'}</Text>
         </Pressable>
       </View>
+      <Hint>{tr('Toca un sonido para escucharlo; tócalo otra vez para pausarlo. Durante los bloques suena solo y se pausa en los descansos.', 'Tap a sound to hear it; tap it again to pause. During blocks it plays by itself and pauses during breaks.')}</Hint>
       <Hint>{tr('Las ondas binaurales funcionan con audífonos: cada oído recibe un tono distinto y el cerebro percibe la diferencia.', 'Binaural waves work with headphones: each ear hears a different tone and the brain perceives the difference.')}</Hint>
     </View>
   );

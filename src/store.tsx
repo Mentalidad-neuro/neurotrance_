@@ -20,6 +20,7 @@ export type Settings = {
   lang: Lang | null; // null = idioma del teléfono
   bg: string; // fondo elegido para las sesiones con voz
   bgVolume: number; // 0 a 1, relativo a la voz
+  bgChosen: boolean; // false = aún no elige: suena lluvia
   tranceBg: string; // fondo de los visuales de trance
   breathTech: string; // técnica de respiración: calma, cuadrada, dormir
   // minutos escuchados por día: { '2026-11-17': 12.5 }
@@ -44,6 +45,7 @@ const DEFAULTS: Settings = {
   lang: null,
   bg: 'ninguno',
   bgVolume: 0.3,
+  bgChosen: false,
   tranceBg: 'theta',
   breathTech: 'calma',
   listened: {},

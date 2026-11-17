@@ -64,15 +64,18 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   const hasVoice = !track.loop;
   // Visuales de trance: el sonido es el fondo que la persona elige. Sesiones con voz: la voz va aparte y el fondo suena bajo, en paralelo.
   const tranceBg = findBg(s.tranceBg === 'ninguno' ? 'theta' : s.tranceBg);
-  const player = useAudioPlayer((isTrance ? tranceBg.source : track.source) ?? null, { updateInterval: 500 });
+  // Reproductores estables: al cambiar el fondo se reemplaza el archivo dentro del mismo toque (necesario en iPhone).
+  const [mainSrc] = useState(() => (isTrance ? tranceBg.source : track.source) ?? null);
+  const player = useAudioPlayer(mainSrc, { updateInterval: 500 });
   const status = useAudioPlayerStatus(player);
   const isBreath = !!track.breathing;
   const [running, setRunning] = useState(false);
   const [breathMin, setBreathMin] = useState(3);
   const [elapsed, setElapsed] = useState(0);
   const playing = isBreath ? running : status.playing;
-  const bg = findBg(s.bg);
-  const bgPlayer = useAudioPlayer(hasVoice ? bg.source ?? null : null);
+  const bg = findBg(s.bgChosen ? s.bg : 'lluvia'); // si la persona aún no elige, suena lluvia suave
+  const [bgSrc] = useState(() => (hasVoice ? bg.source ?? null : null));
+  const bgPlayer = useAudioPlayer(bgSrc);
   const bgKey = isTrance ? tranceBg.key : hasVoice ? bg.key : null;
   const lastBg = useRef(bgKey);
   const [sleepMin, setSleepMin] = useState(30);
@@ -141,7 +144,23 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bgKey]);
 
-  const chooseBg = (k: string) => update(isTrance ? { tranceBg: k } : { bg: k });
+  const chooseBg = (k: string) => {
+    update(isTrance ? { tranceBg: k } : { bg: k, bgChosen: true });
+    const b = findBg(k);
+    lastBg.current = b.key;
+    if (isTrance) {
+      if (!b.source) return;
+      player.replace(b.source);
+      player.loop = true;
+      if (playing) player.play();
+    } else if (hasVoice) {
+      if (!b.source) return bgPlayer.pause();
+      bgPlayer.replace(b.source);
+      bgPlayer.loop = true;
+      bgPlayer.volume = s.bgVolume;
+      if (playing) bgPlayer.play();
+    }
+  };
   const stepVol = (d: number) => update({ bgVolume: Math.round(Math.min(1, Math.max(0.05, s.bgVolume + d)) * 100) / 100 });
   const bgOptions = isTrance ? BACKGROUNDS.filter((b) => b.key !== 'ninguno') : BACKGROUNDS;
   const showBinauralTip = s.headphoneTip && (isTrance ? tranceBg.binaural : hasVoice && bg.binaural);
@@ -242,6 +261,10 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   }
 
   const toggle = () => {
+    if (hasVoice && bg.source) {
+      if (playing) bgPlayer.pause();
+      else bgPlayer.play();
+    }
     if (isBreath) {
       if (!running && elapsed >= breathMin * 60) setElapsed(0);
       setRunning(!running);
@@ -268,6 +291,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
         </Pressable>
       </View>
 
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
       <View style={st.visualWrap}>
         {audioOnly ? (
           <View style={st.audioOnly}>
@@ -368,6 +392,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
           {showBinauralTip && <Text style={st.tip}>{tr('Ponte audífonos: cada oído recibe un tono distinto.', 'Put on headphones: each ear hears a different tone.')}</Text>}
         </View>
       )}
+
+      </ScrollView>
 
       {warn && (
         <View style={st.warn}>

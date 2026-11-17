@@ -26,10 +26,13 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
         </>
       ) : (
         <>
+          <View style={st.badge}>
+            <Text style={st.badgeText}>7 DÍAS GRATIS</Text>
+          </View>
           <Text style={st.h}>NeuroTrance completo</Text>
           <Text style={st.p}>{track ? `"${track.title}" es parte de la suscripción.` : ''} Con la suscripción tienes:</Text>
           <View style={{ gap: 10, marginTop: 8 }}>
-            {['Todas las meditaciones para evaluaciones', 'Todos los sonidos para dormir y repasar', 'Las sesiones de hipnosis a medida que salen', 'Nuevos audios cada mes'].map((b) => (
+            {['Todas las meditaciones para evaluaciones', 'Todos los sonidos para estudiar y dormir', 'Las sesiones de hipnosis a medida que salen', 'Nuevos audios cada mes'].map((b) => (
               <Text key={b} style={st.li}>
                 <Text style={{ color: colors.teal }}>✓ </Text>
                 {b}
@@ -37,8 +40,11 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
             ))}
           </View>
           <View style={{ flex: 1 }} />
-          <Cta label="Muy pronto" onPress={onClose} />
-          <Text style={st.small}>La suscripción se activará cuando la app esté en App Store y Google Play.</Text>
+          <Cta label="Probar 7 días gratis" onPress={onClose} />
+          <Text style={st.small}>
+            Sin registro: usas tu cuenta de Apple o Google. No se cobra nada durante los 7 días y puedes cancelar cuando quieras antes de que terminen.
+          </Text>
+          <Text style={[st.small, { color: colors.lilac }]}>Disponible cuando la app esté en App Store y Google Play.</Text>
         </>
       )}
     </LinearGradient>
@@ -50,5 +56,7 @@ const st = StyleSheet.create({
   h: { fontFamily: fonts.display, fontSize: 24, color: colors.text, textAlign: 'center', marginTop: 18 },
   p: { fontFamily: fonts.body, fontSize: 15, lineHeight: 22, color: colors.muted, textAlign: 'center', marginTop: 10 },
   li: { fontFamily: fonts.body, fontSize: 15, color: colors.text },
+  badge: { alignSelf: 'center', backgroundColor: '#a6cdb733', borderRadius: 99, paddingHorizontal: 12, paddingVertical: 4, marginTop: 16 },
+  badgeText: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1, color: colors.teal },
   small: { fontFamily: fonts.body, fontSize: 12, color: colors.muted, textAlign: 'center', marginTop: 10 },
 });

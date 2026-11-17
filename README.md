@@ -12,7 +12,7 @@ App para estudiantes: meditaciones de 3 minutos para evaluaciones, sonidos para 
 - **Dormir**: 4 sonidos en bucle (lluvia, ruido rosa, olas, ondas delta binaurales) con temporizador de 15 min, 30 min, 1 hora o toda la noche; el volumen baja de a poco en los últimos 30 segundos. Siguen sonando con la pantalla bloqueada.
 - **Hipnosis**: 3 sesiones listadas como "por grabar".
 - **Mi espacio**: fecha y hora editables, recordatorio diario 15 min antes de dormir, pantalla oscura al dormir, aviso de audífonos, metas y favoritos.
-- **Suscripción**: pantalla informativa. El cobro real (App Store / Google Play, por ejemplo con RevenueCat) queda pendiente hasta tener las cuentas de desarrolladora.
+- **Suscripción**: sin registro de usuario; el contenido gratis se usa sin cuenta y la suscripción se paga con la cuenta de Apple o Google, con 7 días de prueba gratis. Pantalla informativa por ahora. El cobro real (App Store / Google Play, por ejemplo con RevenueCat) queda pendiente hasta tener las cuentas de desarrolladora.
 
 ## Dónde está cada cosa
 

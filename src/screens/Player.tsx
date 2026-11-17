@@ -87,6 +87,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fadeInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const isLoop = !!track.loop;
+  // La cuenta de respiración va en la respiración guiada y en los visuales y sonidos. En meditaciones e hipnosis guía la voz.
+  const showGuide = isBreath || isLoop;
   const fav = s.favorites.includes(track.id);
 
   // Configura el audio y empieza a sonar al abrir.
@@ -298,7 +300,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
             <Text style={st.audioOnlyText}>{tr('Solo audio', 'Audio only')}</Text>
           </View>
         ) : (
-          <TranceVisual kind={visual} playing={playing} safe={safe} breath={guide} />
+          <TranceVisual kind={visual} playing={playing} safe={safe} breath={showGuide ? guide : undefined} />
         )}
       </View>
       {!audioOnly && (
@@ -334,12 +336,12 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
         </Pressable>
       </View>
       <Text style={st.cue} accessibilityLiveRegion="polite">
-        {playing ? `${STEP_LABEL(tech.steps[ph.i][0])} · ${ph.left}` : breathDone ? tr('Terminaste. Bien hecho.', 'Done. Well done.') : status.isBuffering && !isBreath ? tr('Cargando…', 'Loading…') : ''}
+        {playing && showGuide ? `${STEP_LABEL(tech.steps[ph.i][0])} · ${ph.left}` : playing ? '' : breathDone ? tr('Terminaste. Bien hecho.', 'Done. Well done.') : status.isBuffering && !isBreath ? tr('Cargando…', 'Loading…') : ''}
       </Text>
       <View style={st.techRow}>
-        <Pressable onPress={cycleTech} style={st.techBtn} accessibilityRole="button" accessibilityLabel={tr(`Técnica de respiración: ${tech.label}. Toca para cambiar`, `Breathing technique: ${tech.label}. Tap to change`)}>
+        {showGuide && <Pressable onPress={cycleTech} style={st.techBtn} accessibilityRole="button" accessibilityLabel={tr(`Técnica de respiración: ${tech.label}. Toca para cambiar`, `Breathing technique: ${tech.label}. Tap to change`)}>
           <Text style={st.techText}>{tr('Respiración', 'Breathing')}: {tech.label}  ⟳</Text>
-        </Pressable>
+        </Pressable>}
         {isBreath &&
           BREATH_MIN.map((m) => (
             <Pressable key={m} onPress={() => { setBreathMin(m); setElapsed(0); }} style={[st.tBtn, breathMin === m && st.tBtnOn]} accessibilityRole="radio" accessibilityState={{ selected: breathMin === m }}>

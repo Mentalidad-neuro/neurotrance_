@@ -126,7 +126,7 @@ export default function Player({ track, onClose }: { track: Track; onClose: () =
   const progress = !isLoop && status.duration > 0 ? Math.min(1, status.currentTime / status.duration) : 0;
 
   return (
-    <LinearGradient colors={['#2c3766', colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
+    <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
       <View style={st.top}>
         <LinkButton label="‹ Volver" onPress={onClose} />
         <Pressable onPress={() => toggleFavorite(track.id)} hitSlop={10} accessibilityLabel={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}>
@@ -135,7 +135,7 @@ export default function Player({ track, onClose }: { track: Track; onClose: () =
       </View>
 
       <Animated.View style={[st.orbWrap, { transform: [{ scale: breathe }] }]}>
-        <LinearGradient colors={['#fbeee0', colors.moon, colors.lilac, '#5f6fa8']} locations={[0, 0.25, 0.6, 1]} start={{ x: 0.3, y: 0.2 }} end={{ x: 0.8, y: 1 }} style={st.orb} />
+        <LinearGradient colors={[colors.orbCore, colors.moon, colors.lilac, colors.orbEdge]} locations={[0, 0.25, 0.6, 1]} start={{ x: 0.3, y: 0.2 }} end={{ x: 0.8, y: 1 }} style={st.orb} />
       </Animated.View>
 
       <Text style={st.title}>{track.title}</Text>

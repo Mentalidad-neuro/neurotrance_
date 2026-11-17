@@ -139,7 +139,7 @@ export default function App() {
   const [loaded] = useFonts({ Sora_400Regular, Sora_600SemiBold, NunitoSans_400Regular, NunitoSans_600SemiBold, NunitoSans_700Bold });
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" />
+      <StatusBar style={colors.statusBar} />
       {loaded ? (
         <SettingsProvider>
           <Main />

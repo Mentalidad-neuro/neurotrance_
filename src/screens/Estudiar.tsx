@@ -141,7 +141,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
       <Eyebrow color={colors.teal}>Concentración</Eyebrow>
       <H2>Estudiar con foco</H2>
 
-      <View style={[st.card, phase === 'rest' && { backgroundColor: '#2f4a44' }]}>
+      <View style={[st.card, phase === 'rest' && { backgroundColor: colors.success }]}>
         <Text style={[st.phase, phase === 'rest' && { color: colors.teal }]}>{label}</Text>
         <Text style={st.clock} accessibilityRole="timer">
           {mmss(phase === 'idle' ? plan.focus * 60000 : remaining)}
@@ -220,25 +220,25 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
 }
 
 const st = StyleSheet.create({
-  card: { backgroundColor: colors.card, borderRadius: 22, padding: 18, alignItems: 'center' },
+  card: { backgroundColor: colors.card, borderRadius: 28, padding: 18, alignItems: 'center' },
   phase: { fontFamily: fonts.bodyBold, fontSize: 12, letterSpacing: 1.3, textTransform: 'uppercase', color: colors.moon },
   clock: { fontFamily: fonts.display, fontSize: 64, color: colors.text, marginVertical: 4, fontVariant: ['tabular-nums'] },
   blocks: { fontFamily: fonts.body, fontSize: 13, color: colors.muted, textAlign: 'center' },
   bar: { alignSelf: 'stretch', height: 4, borderRadius: 4, backgroundColor: colors.line, overflow: 'hidden', marginTop: 14 },
   barFill: { height: 4, backgroundColor: colors.moon },
   btnRow: { flexDirection: 'row', gap: 10, marginTop: 16, alignSelf: 'stretch' },
-  main: { flex: 1, backgroundColor: colors.moon, borderRadius: 14, paddingVertical: 13, alignItems: 'center' },
+  main: { flex: 1, backgroundColor: colors.moon, borderRadius: 18, paddingVertical: 13, alignItems: 'center' },
   mainText: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.sky },
-  second: { flex: 1, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingVertical: 13, alignItems: 'center' },
+  second: { flex: 1, borderWidth: 1, borderColor: colors.line, borderRadius: 18, paddingVertical: 13, alignItems: 'center' },
   secondText: { fontFamily: fonts.bodySemi, fontSize: 15, color: colors.text },
   chips: { flexDirection: 'row', gap: 8 },
-  chip: { flex: 1, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingVertical: 10, alignItems: 'center' },
+  chip: { flex: 1, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 18, paddingVertical: 10, alignItems: 'center' },
   chipOn: { backgroundColor: colors.teal, borderColor: colors.teal },
   chipN: { fontFamily: fonts.display, fontSize: 20, color: colors.text },
   chipSub: { fontFamily: fonts.body, fontSize: 11, color: colors.muted },
-  item: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 16, padding: 12, borderWidth: 1, borderColor: 'transparent' },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 22, padding: 12, borderWidth: 1, borderColor: 'transparent' },
   itemOn: { borderColor: colors.teal },
-  ic: { width: 42, height: 42, borderRadius: 12, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
+  ic: { width: 42, height: 42, borderRadius: 15, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
   icText: { color: colors.teal, fontFamily: fonts.display, fontSize: 16 },
   itemTitle: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.text },
   itemSub: { fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 2 },

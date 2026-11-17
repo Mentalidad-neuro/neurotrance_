@@ -25,7 +25,7 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
   const next = () => (step < 2 ? setStep(step + 1) : finish());
 
   return (
-    <LinearGradient colors={['#2c3766', colors.sky]} locations={[0, 0.75]} style={[st.wrap, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]}>
+    <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.75]} style={[st.wrap, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]}>
       <View style={st.dots}>
         {[0, 1, 2].map((i) => (
           <View key={i} style={[st.dot, i === step && st.dotOn]} />

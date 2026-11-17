@@ -38,7 +38,7 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
     }
   };
   return (
-    <LinearGradient colors={['#2c3766', colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
+    <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
       <View style={{ alignSelf: 'flex-start' }}>
         <LinkButton label="‹ Volver" onPress={onClose} />
       </View>
@@ -108,8 +108,8 @@ const st = StyleSheet.create({
   h: { fontFamily: fonts.display, fontSize: 24, color: colors.text, textAlign: 'center', marginTop: 18 },
   p: { fontFamily: fonts.body, fontSize: 15, lineHeight: 22, color: colors.muted, textAlign: 'center', marginTop: 10 },
   li: { fontFamily: fonts.body, fontSize: 15, color: colors.text },
-  badge: { alignSelf: 'center', backgroundColor: '#a6cdb733', borderRadius: 99, paddingHorizontal: 12, paddingVertical: 4, marginTop: 16 },
+  badge: { alignSelf: 'center', backgroundColor: colors.tealSoft, borderRadius: 99, paddingHorizontal: 12, paddingVertical: 4, marginTop: 16 },
   badgeText: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1, color: colors.teal },
-  input: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, color: colors.text, fontFamily: fonts.bodySemi, fontSize: 15 },
+  input: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 12, color: colors.text, fontFamily: fonts.bodySemi, fontSize: 15 },
   small: { fontFamily: fonts.body, fontSize: 12, color: colors.muted, textAlign: 'center', marginTop: 10 },
 });

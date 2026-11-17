@@ -22,7 +22,7 @@ export function Logo({ size = 96 }: { size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 96 96">
       <Circle cx={58} cy={34} r={18} fill={colors.moon} />
-      <Circle cx={66} cy={28} r={15} fill="#2c3766" />
+      <Circle cx={66} cy={28} r={15} fill={colors.gradTop} />
       <Path d="M8 66c6 0 8-12 14-12s8 12 14 12 8-12 14-12 8 12 14 12 8-12 14-12 6 6 10 6" stroke={colors.lilac} strokeWidth={4} fill="none" strokeLinecap="round" />
       <Path d="M14 80c8 0 12-6 20-6s12 6 20 6 12-6 20-6" stroke={colors.teal} strokeWidth={3.5} fill="none" strokeLinecap="round" opacity={0.8} />
     </Svg>
@@ -63,7 +63,7 @@ export function TrackRow({ t, locked, onPress, favorite }: { t: Track; locked: b
 
 export function Pill({ text, soft }: { text: string; soft?: boolean }) {
   return (
-    <View style={[s.pill, soft && { backgroundColor: '#b7a6f022' }]}>
+    <View style={[s.pill, soft && { backgroundColor: colors.lilacSoft }]}>
       <Text style={[s.pillText, soft && { color: colors.lilac }]}>{text.toUpperCase()}</Text>
     </View>
   );
@@ -135,30 +135,30 @@ export const s = StyleSheet.create({
   h2: { fontFamily: fonts.display, fontSize: 24, color: colors.text, marginTop: 4, marginBottom: 14 },
   h3: { fontFamily: fonts.display, fontSize: 16, color: colors.text, marginTop: 22, marginBottom: 10 },
   hint: { fontFamily: fonts.body, color: colors.muted, fontSize: 13, lineHeight: 20, marginTop: 8 },
-  tileWrap: { width: '48.5%', borderRadius: 18, overflow: 'hidden' },
-  tile: { minHeight: 104, padding: 14, justifyContent: 'space-between', borderRadius: 18 },
-  tileTitle: { fontFamily: fonts.display, fontSize: 15, color: colors.text },
-  tileSub: { fontFamily: fonts.body, fontSize: 12, color: '#ffffffb3' },
-  item: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 16, padding: 12 },
-  ic: { width: 42, height: 42, borderRadius: 12, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
+  tileWrap: { width: '48.5%', borderRadius: 24, overflow: 'hidden' },
+  tile: { minHeight: 104, padding: 14, justifyContent: 'space-between', borderRadius: 24 },
+  tileTitle: { fontFamily: fonts.display, fontSize: 15, color: '#fffaf5' },
+  tileSub: { fontFamily: fonts.body, fontSize: 12, color: colors.onTile },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 22, padding: 12 },
+  ic: { width: 42, height: 42, borderRadius: 15, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
   icText: { color: colors.teal, fontFamily: fonts.display, fontSize: 16 },
   itemTitle: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.text },
   itemSub: { fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 2 },
   dur: { fontFamily: fonts.body, fontSize: 12, color: colors.muted },
-  pill: { backgroundColor: '#7fd1c322', borderRadius: 99, paddingHorizontal: 7, paddingVertical: 2 },
+  pill: { backgroundColor: colors.tealSoft, borderRadius: 99, paddingHorizontal: 7, paddingVertical: 2 },
   pillText: { fontFamily: fonts.bodyBold, fontSize: 9, letterSpacing: 0.6, color: colors.teal },
-  chip: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingVertical: 11, paddingHorizontal: 14 },
-  chipOn: { backgroundColor: '#c4b5ee33', borderColor: colors.lilac },
+  chip: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 18, paddingVertical: 11, paddingHorizontal: 14 },
+  chipOn: { backgroundColor: colors.lilacSoft, borderColor: colors.lilac },
   chipText: { fontFamily: fonts.bodySemi, fontSize: 14, color: colors.text },
   sw: { width: 46, height: 28, borderRadius: 99, backgroundColor: colors.line, justifyContent: 'center' },
   knob: { position: 'absolute', left: 3, width: 22, height: 22, borderRadius: 11, backgroundColor: colors.text },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 16, padding: 14 },
-  cta: { backgroundColor: colors.moon, borderRadius: 16, paddingVertical: 15, alignItems: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 22, padding: 14 },
+  cta: { backgroundColor: colors.moon, borderRadius: 22, paddingVertical: 15, alignItems: 'center' },
   ctaText: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.sky },
   link: { fontFamily: fonts.bodySemi, fontSize: 14, color: colors.muted, textAlign: 'center' },
   fieldLabel: { fontFamily: fonts.bodySemi, fontSize: 13, color: colors.muted },
-  stepper: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: 6 },
-  stepBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
+  stepper: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 18, padding: 6 },
+  stepBtn: { width: 44, height: 44, borderRadius: 15, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
   stepBtnText: { color: colors.text, fontSize: 22, fontFamily: fonts.bodySemi },
   stepValue: { flex: 1, textAlign: 'center', color: colors.text, fontFamily: fonts.bodyBold, fontSize: 17 },
 });

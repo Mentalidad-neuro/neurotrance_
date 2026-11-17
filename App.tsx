@@ -9,6 +9,11 @@ import { Sora_600SemiBold } from '@expo-google-fonts/sora/600SemiBold';
 import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans/400Regular';
 import { NunitoSans_600SemiBold } from '@expo-google-fonts/nunito-sans/600SemiBold';
 import { NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans/700Bold';
+import { Quicksand_500Medium } from '@expo-google-fonts/quicksand/500Medium';
+import { Quicksand_700Bold } from '@expo-google-fonts/quicksand/700Bold';
+import { Fraunces_400Regular } from '@expo-google-fonts/fraunces/400Regular';
+import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces/600SemiBold';
+import Backdrop from './src/components/Backdrop';
 import { SettingsProvider, useAccess, useSettings } from './src/store';
 import { Track, findTrack } from './src/content';
 import { colors, fonts } from './src/theme';
@@ -106,6 +111,7 @@ function Main() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.sky }}>
+      <Backdrop />
       {/* Estudiar queda siempre montada para que el pomodoro siga corriendo al cambiar de pestaña. */}
       <ScrollView style={{ display: studyVisible ? 'flex' : 'none' }} contentContainerStyle={pad}>
         <Estudiar locked={(t) => setPaywall(t)} />
@@ -138,7 +144,17 @@ function Main() {
 }
 
 export default function App() {
-  const [loaded] = useFonts({ Sora_400Regular, Sora_600SemiBold, NunitoSans_400Regular, NunitoSans_600SemiBold, NunitoSans_700Bold });
+  const [loaded] = useFonts({
+    Sora_400Regular,
+    Sora_600SemiBold,
+    NunitoSans_400Regular,
+    NunitoSans_600SemiBold,
+    NunitoSans_700Bold,
+    Quicksand_500Medium,
+    Quicksand_700Bold,
+    Fraunces_400Regular,
+    Fraunces_600SemiBold,
+  });
   return (
     <SafeAreaProvider>
       <StatusBar style={colors.statusBar} />

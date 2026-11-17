@@ -1,9 +1,11 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Eyebrow, H2, H3, Hint, Tile } from '../components/ui';
+import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Circle } from 'react-native-svg';
+import { Eyebrow, H3, Hint, Icon, Tile } from '../components/ui';
 import { MEDITACIONES } from '../content';
 import { daysUntil, formatDate, todayKey, useAccess, useSettings } from '../store';
-import { colors, fonts, tileGradients } from '../theme';
+import { colors, fonts, themeName, tileGradients, tileIcon } from '../theme';
 import { tr } from '../i18n';
 
 export type Tab = 'inicio' | 'estudiar' | 'dormir' | 'hipnosis' | 'evaluaciones';
@@ -39,6 +41,28 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
   const activeDays = week.filter((k) => (s.listened[k] ?? 0) >= 1).length;
   const weekMinutes = Math.round(week.reduce((a, k) => a + (s.listened[k] ?? 0), 0));
 
+  const night = themeName === 'estrellada';
+  const heroIsSleep = h >= 20 || h < 7;
+  const trialText = premium
+    ? ''
+    : inTrial
+      ? tr(`Prueba gratis: ${daysLeft === 1 ? 'queda 1 día' : `quedan ${daysLeft} días`}`, `Free trial: ${daysLeft === 1 ? '1 day' : `${daysLeft} days`} left`)
+      : '';
+  const moods: { label: string; go: () => void }[] = [
+    { label: tr('😌 En calma', '😌 Calm'), go: () => go('estudiar') },
+    { label: tr('😴 Con sueño', '😴 Sleepy'), go: () => go('dormir') },
+    { label: tr('😰 Con nervios', '😰 Nervous'), go: () => go('evaluaciones') },
+  ];
+  const tiles = [
+    heroIsSleep
+      ? { k: 'estudiar' as const, icon: 'book' as const, title: tr('Estudiar con foco', 'Focused study'), sub: tr('Pomodoros y sonidos', 'Pomodoros and sounds'), on: () => go('estudiar') }
+      : { k: 'dormir' as const, icon: 'moon' as const, title: tr('Dormir', 'Sleep'), sub: tr('Lluvia, olas y más', 'Rain, waves and more'), on: () => go('dormir') },
+    { k: 'calma' as const, icon: 'wind' as const, title: tr('Calmarme ahora', 'Calm down now'), sub: tr('Meditaciones de 3 min', '3-minute meditations'), on: () => go('evaluaciones') },
+    { k: 'hipnosis' as const, icon: 'spiral' as const, title: tr('Hipnosis', 'Hypnosis'), sub: tr('Sueño, ansiedad, memoria', 'Sleep, anxiety, memory'), on: () => go('hipnosis') },
+    { k: 'noche' as const, icon: 'star' as const, title: tr('Noche antes', 'Night before'), sub: tr('Para la víspera', 'For the eve of your exam'), on: () => play(MEDITACIONES[0].id) },
+  ];
+  const ring = days === null ? 0 : Math.max(0.06, Math.min(1, days / 30));
+
   return (
     <View>
       <View style={st.top}>
@@ -47,28 +71,45 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
           <Text style={st.avatarText}>M</Text>
         </Pressable>
       </View>
-      <H2>{tr('¿Cómo quieres sentirte hoy?', 'How do you want to feel today?')}</H2>
+      <Text style={st.title}>{tr('¿Cómo quieres sentirte hoy?', 'How do you want to feel today?')}</Text>
       <Text style={st.warm}>{WARM()[new Date().getDate() % 5]}</Text>
 
-      {!premium && (
-        <View style={[st.trial, !inTrial && { borderColor: colors.moon }]}>
-          <Text style={st.trialText}>
-            {inTrial
-              ? tr(
-                  `Prueba gratis: te ${daysLeft === 1 ? 'queda 1 día' : `quedan ${daysLeft} días`} con todo NeuroTrance libre.`,
-                  `Free trial: ${daysLeft === 1 ? '1 day' : `${daysLeft} days`} left with all of NeuroTrance unlocked.`,
-                )
-              : tr('Tu prueba gratis terminó. Suscríbete para seguir con todo NeuroTrance.', 'Your free trial has ended. Subscribe to keep all of NeuroTrance.')}
-          </Text>
+      <View style={st.moods}>
+        {moods.map((m, i) => (
+          <Pressable key={i} onPress={m.go} style={({ pressed }) => [st.mood, pressed && { opacity: 0.8 }]} accessibilityRole="button">
+            <Text style={st.moodText}>{m.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {!premium && !inTrial && (
+        <View style={st.trial}>
+          <Text style={st.trialText}>{tr('Tu prueba gratis terminó. Suscríbete para seguir con todo NeuroTrance.', 'Your free trial has ended. Subscribe to keep all of NeuroTrance.')}</Text>
         </View>
       )}
 
       <View style={st.count}>
+        {!night && days !== null && (
+          <View style={st.ringWrap}>
+            <Svg width={62} height={62} viewBox="0 0 62 62">
+              <Circle cx={31} cy={31} r={26} stroke={colors.lilacSoft} strokeWidth={7} fill="none" />
+              <Circle cx={31} cy={31} r={26} stroke="#a8e6cf" strokeWidth={7} fill="none" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 26}`} strokeDashoffset={`${2 * Math.PI * 26 * (1 - ring)}`} transform="rotate(-90 31 31)" />
+            </Svg>
+            <Text style={st.ringN}>{days}</Text>
+          </View>
+        )}
         <View style={{ flex: 1 }}>
-          <Eyebrow>{days === null ? tr('Tu próxima evaluación', 'Your next exam') : tr('Faltan para tu evaluación', 'Until your exam')}</Eyebrow>
-          <Text style={st.small}>{s.examDate ? formatDate(s.examDate) : tr('Agrega la fecha en Mi espacio', 'Add the date in My space')}</Text>
+          {night || days === null ? (
+            <Text style={st.countLabel}>{days === null ? tr('Tu próxima evaluación', 'Your next exam') : tr('Faltan para tu evaluación', 'Until your exam')}</Text>
+          ) : (
+            <Text style={st.countTitle}>{days === 1 ? tr('día para tu evaluación', 'day until your exam') : tr('días para tu evaluación', 'days until your exam')}</Text>
+          )}
+          <Text style={st.small}>
+            {s.examDate ? formatDate(s.examDate) : tr('Agrega la fecha en Mi espacio', 'Add the date in My space')}
+            {trialText ? ` · ${trialText}` : ''}
+          </Text>
         </View>
-        {days !== null && (
+        {night && days !== null && (
           <Text style={st.n}>
             {days}
             <Text style={st.nUnit}> {days === 1 ? tr('día', 'day') : tr('días', 'days')}</Text>
@@ -76,13 +117,27 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
         )}
       </View>
 
-      <H3>{tr('Elige', 'Choose')}</H3>
+      <Pressable onPress={() => go(heroIsSleep ? 'dormir' : 'estudiar')} style={({ pressed }) => [pressed && { opacity: 0.9 }]} accessibilityRole="button">
+        <LinearGradient colors={tileGradients.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={st.hero}>
+          <View style={st.heroGlow} />
+          <Text style={st.heroEyebrow}>{tr('Recomendado para ahora', 'Recommended for now')}</Text>
+          <Text style={st.heroTitle}>{heroIsSleep ? tr('Dormir profundo', 'Sleep deeply') : tr('Estudiar con foco', 'Focused study')}</Text>
+          <Text style={st.heroSub}>
+            {heroIsSleep
+              ? tr('Sonidos para la noche que se apagan solos', 'Night sounds that turn off by themselves')
+              : tr('Pomodoros de 25 a 55 min con sonidos para concentrarte', 'Pomodoros from 25 to 55 min with sounds to help you focus')}
+          </Text>
+          <View style={st.heroBtn}>
+            <Icon name="play" color={night ? '#2c2a6b' : colors.text} size={14} />
+            <Text style={st.heroBtnText}>{tr('Empezar', 'Start')}</Text>
+          </View>
+        </LinearGradient>
+      </Pressable>
+
       <View style={st.grid}>
-        <Tile wide title={tr('Estudiar con foco', 'Focused study')} sub={tr('Pomodoros de 25 a 55 min con sonidos para concentrarte', 'Pomodoros from 25 to 55 min with sounds to help you focus')} grad={tileGradients.estudiar} onPress={() => go('estudiar')} />
-        <Tile title={tr('Dormir', 'Sleep')} sub={tr('Sonidos y apagado automático', 'Sounds with auto shut-off')} grad={tileGradients.dormir} onPress={() => go('dormir')} />
-        <Tile title={tr('Calmarme ahora', 'Calm down now')} sub={tr('Meditaciones de 3 min', '3-minute meditations')} grad={tileGradients.calma} onPress={() => go('evaluaciones')} />
-        <Tile title={tr('Hipnosis', 'Hypnosis')} sub={tr('Sueño, ansiedad, memoria', 'Sleep, anxiety, memory')} grad={tileGradients.hipnosis} onPress={() => go('hipnosis')} />
-        <Tile title={tr('Noche antes', 'Night before')} sub={tr('Para la víspera de la prueba', 'For the eve of your exam')} grad={tileGradients.noche} onPress={() => play(MEDITACIONES[0].id)} />
+        {tiles.map((t) => (
+          <Tile key={t.k} title={t.title} sub={t.sub} grad={tileGradients[t.k]} icon={t.icon} iconColor={tileIcon(t.k)} onPress={t.on} />
+        ))}
       </View>
 
       <H3>{tr('Tu semana', 'Your week')}</H3>
@@ -111,20 +166,45 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
   );
 }
 
+const glass = colors.glass ? { borderWidth: 1, borderColor: colors.line } : { boxShadow: '0 10px 28px rgba(122,102,207,0.13)' };
 const st = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  warm: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20, color: colors.muted, marginTop: -6, marginBottom: 16 },
-  trial: { borderWidth: 1, borderColor: colors.teal, borderRadius: 18, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 12 },
+  title: { fontFamily: fonts.display, fontSize: themeName === 'estrellada' ? 31 : 28, lineHeight: themeName === 'estrellada' ? 36 : 34, color: colors.text, marginTop: 8, marginBottom: 4 },
+  warm: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20, color: colors.muted, marginBottom: 14 },
+  moods: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 },
+  mood: { backgroundColor: colors.card, borderRadius: 99, paddingVertical: 8, paddingHorizontal: 13, ...glass },
+  moodText: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.text },
+  trial: { borderWidth: 1, borderColor: colors.moon, borderRadius: 18, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 12 },
   trialText: { fontFamily: fonts.bodySemi, fontSize: 13, lineHeight: 19, color: colors.text },
-  avatar: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.lilac, fontFamily: fonts.display, fontSize: 15 },
-  count: { backgroundColor: colors.card, borderRadius: 26, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  n: { fontFamily: fonts.display, fontSize: 34, color: colors.moon },
-  nUnit: { fontFamily: fonts.body, fontSize: 14, color: colors.muted },
+  avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: themeName === 'algodon' ? '#ffd8c2' : colors.card, borderWidth: colors.glass ? 1 : 0, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: themeName === 'algodon' ? '#b5603f' : colors.moon, fontFamily: fonts.display, fontSize: 16 },
+  count: { backgroundColor: colors.card, borderRadius: 26, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14, ...glass },
+  ringWrap: { width: 62, height: 62, alignItems: 'center', justifyContent: 'center' },
+  ringN: { position: 'absolute', fontFamily: fonts.display, fontSize: 20, color: colors.text },
+  countLabel: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.muted },
+  countTitle: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.text },
+  n: { fontFamily: fonts.display, fontSize: 38, color: colors.moon },
+  nUnit: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
   small: { fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 2 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10 },
+  hero: { marginTop: 14, borderRadius: 28, padding: 18, minHeight: 172, overflow: 'hidden' },
+  heroGlow: {
+    position: 'absolute',
+    right: -50,
+    top: -45,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: themeName === 'estrellada' ? '#f3d08d' : '#ffffff8c',
+    opacity: themeName === 'estrellada' ? 0.85 : 1,
+  },
+  heroEyebrow: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: themeName === 'estrellada' ? '#ffe2a8' : '#9a5a3a' },
+  heroTitle: { fontFamily: fonts.display, fontSize: 24, color: themeName === 'estrellada' ? '#ffffff' : colors.text, marginTop: 6 },
+  heroSub: { fontFamily: fonts.body, fontSize: 13, lineHeight: 19, color: themeName === 'estrellada' ? '#e3e0ff' : '#5b5378', marginTop: 4, width: '78%' },
+  heroBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', backgroundColor: '#ffffff', borderRadius: 99, paddingVertical: 8, paddingHorizontal: 16, marginTop: 14 },
+  heroBtnText: { fontFamily: fonts.bodyBold, fontSize: 13, color: themeName === 'estrellada' ? '#2c2a6b' : colors.text },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 10, marginTop: 10 },
   stat: { flexDirection: 'row', gap: 10 },
-  statBox: { flex: 1, backgroundColor: colors.card, borderRadius: 22, padding: 12 },
+  statBox: { flex: 1, backgroundColor: colors.card, borderRadius: 22, padding: 12, ...glass },
   statN: { fontFamily: fonts.display, fontSize: 22, color: colors.moon },
   week: { flexDirection: 'row', gap: 6, marginTop: 10 },
   day: { flex: 1, aspectRatio: 1, borderRadius: 10, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },

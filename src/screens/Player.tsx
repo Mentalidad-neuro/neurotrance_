@@ -9,6 +9,7 @@ import TranceVisual, { VISUALS, VisualKind } from '../components/TranceVisual';
 import type { Track } from '../content';
 import { useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import Backdrop from '../components/Backdrop';
 import { tr } from '../i18n';
 
 const TIMER_OPTIONS = () => [
@@ -134,6 +135,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
 
   return (
     <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
+      <Backdrop />
       <View style={st.top}>
         <LinkButton label={tr('‹ Volver', '‹ Back')} onPress={onClose} />
         <Pressable onPress={() => toggleFavorite(track.id)} hitSlop={10} accessibilityLabel={fav ? tr('Quitar de favoritos', 'Remove from favorites') : tr('Agregar a favoritos', 'Add to favorites')}>

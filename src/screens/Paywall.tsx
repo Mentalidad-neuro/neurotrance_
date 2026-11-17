@@ -8,6 +8,7 @@ import type { Track } from '../content';
 import { MERCADO_PAGO_PLAN_URL, PRICE_TEXT, PRICE_TEXT_EN, TRIAL_DAYS, VERIFY_URL } from '../config';
 import { useAccess, useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import Backdrop from '../components/Backdrop';
 import { tr } from '../i18n';
 
 // Pantalla de suscripción. El cobro se hace con un plan de Mercado Pago (con días de prueba gratis).
@@ -42,6 +43,7 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
   };
   return (
     <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
+      <Backdrop />
       <View style={{ alignSelf: 'flex-start' }}>
         <LinkButton label={tr('‹ Volver', '‹ Back')} onPress={onClose} />
       </View>

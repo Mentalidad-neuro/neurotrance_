@@ -8,6 +8,7 @@ import { addDays, addMinutes, defaultExamDate } from '../dates';
 import { scheduleBedtimeReminder } from '../notifications';
 import { formatDate, todayKey, useSettings } from '../store';
 import { colors, fonts } from '../theme';
+import Backdrop from '../components/Backdrop';
 import { getLang, tr } from '../i18n';
 
 export default function Onboarding({ onDone }: { onDone: () => void }) {
@@ -27,6 +28,7 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
 
   return (
     <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.75]} style={[st.wrap, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]}>
+      <Backdrop />
       <View style={st.dots}>
         {[0, 1, 2].map((i) => (
           <View key={i} style={[st.dot, i === step && st.dotOn]} />

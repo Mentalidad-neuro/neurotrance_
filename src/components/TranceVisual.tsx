@@ -84,7 +84,7 @@ export default function TranceVisual({ kind, playing, safe }: { kind: VisualKind
   if (kind === 'esfera') {
     return (
       <Animated.View style={[st.box, { opacity: dim, transform: [{ scale }] }]}>
-        <LinearGradient colors={[colors.orbCore, colors.moon, colors.lilac, colors.orbEdge]} locations={[0, 0.25, 0.6, 1]} start={{ x: 0.3, y: 0.2 }} end={{ x: 0.8, y: 1 }} style={st.orb} />
+        <LinearGradient colors={[colors.orbCore, colors.orbA ?? colors.moon, colors.orbB ?? colors.lilac, colors.orbEdge]} locations={[0, 0.25, 0.6, 1]} start={{ x: 0.3, y: 0.2 }} end={{ x: 0.8, y: 1 }} style={st.orb} />
       </Animated.View>
     );
   }
@@ -99,11 +99,11 @@ export default function TranceVisual({ kind, playing, safe }: { kind: VisualKind
     return (
       <Animated.View style={[st.box, { transform: [{ scale }] }]}>
         <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate: rot }] }]}>
-          <Svg width={SIZE} height={SIZE} viewBox="0 0 240 240">{petals(12, 16, 46, 62, colors.lilac, 0.45)}</Svg>
+          <Svg width={SIZE} height={SIZE} viewBox="0 0 240 240">{petals(12, 16, 46, 62, colors.orbB ?? colors.lilac, 0.45)}</Svg>
         </Animated.View>
         <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ rotate: rotBack }] }]}>
           <Svg width={SIZE} height={SIZE} viewBox="0 0 240 240">
-            {petals(8, 12, 32, 36, colors.moon, 0.55)}
+            {petals(8, 12, 32, 36, colors.orbA ?? colors.moon, 0.55)}
             <Circle cx={120} cy={120} r={16} fill={colors.orbCore} opacity={0.8 * dim} />
           </Svg>
         </Animated.View>

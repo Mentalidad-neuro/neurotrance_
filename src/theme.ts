@@ -1,5 +1,5 @@
-// Paletas de NeuroTrance. Por defecto: Nido de día (7:00 a 19:59) y Atardecer de noche,
-// según la hora en que se abre la app. EXPO_PUBLIC_THEME = 'noche' | 'atardecer' | 'nido' fuerza una.
+// Paletas de NeuroTrance. Por defecto: Algodón de día (7:00 a 19:59) y Noche estrellada de noche,
+// según la hora en que se abre la app. EXPO_PUBLIC_THEME = 'algodon' | 'estrellada' | 'nido' | 'atardecer' | 'noche' fuerza una.
 
 type Palette = {
   sky: string; // fondo
@@ -21,6 +21,10 @@ type Palette = {
   orbCore: string;
   onTile: string; // texto secundario sobre tarjetas de color
   statusBar: 'light' | 'dark';
+  tileText?: string; // título sobre tarjetas de color
+  glass?: boolean; // tarjetas translúcidas sobre cielo con estrellas
+  orbA?: string; // colores intermedios de la esfera y el mandala (si no, moon y lilac)
+  orbB?: string;
 };
 
 const noche: Palette = {
@@ -46,28 +50,62 @@ const nido: Palette = {
   orbEdge: '#b98fc6', orbCore: '#fff8ef', onTile: '#ffffffd9', statusBar: 'dark',
 };
 
-const PALETTES = { noche, atardecer, nido };
+// Claro y alegre: lavanda, menta y durazno sobre blanco lila.
+const algodon: Palette = {
+  sky: '#fbf8ff', sky2: '#ffffff', card: '#ffffff', line: '#ebe5f8', text: '#3b3458', muted: '#837c9f',
+  moon: '#7a66cf', teal: '#3f8f6b', lilac: '#7a5fd0', blue: '#4f68b8',
+  gradTop: '#efe8ff', success: '#dff7ec', successSoft: '#eefaf3', tealSoft: '#a8e6cf66', lilacSoft: '#e9e1ff',
+  orbEdge: '#b9a7f2', orbCore: '#fff3ea', onTile: '#5b5378', statusBar: 'dark', tileText: '#3b3458', orbA: '#ffc9a8', orbB: '#bfaaf7',
+};
+
+// Noche estrellada: azul profundo, brillo dorado y tarjetas de vidrio.
+const estrellada: Palette = {
+  sky: '#10153a', sky2: '#0c1131', card: '#ffffff12', line: '#ffffff21', text: '#eef0ff', muted: '#a9afd6',
+  moon: '#e8c27a', teal: '#7fd1c3', lilac: '#b9a8f5', blue: '#9ec3e6',
+  gradTop: '#1f2766', success: '#1d3b4a', successSoft: '#ffffff0d', tealSoft: '#7fd1c333', lilacSoft: '#b9a8f533',
+  orbEdge: '#5b3f9e', orbCore: '#ffe7b8', onTile: '#d9d6f5', statusBar: 'light', tileText: '#ffffff', glass: true,
+};
+
+const PALETTES = { noche, atardecer, nido, algodon, estrellada };
 export type ThemeName = keyof typeof PALETTES;
 const forced = process.env.EXPO_PUBLIC_THEME as ThemeName | undefined;
 const hour = new Date().getHours();
-export const themeName: ThemeName = forced && forced in PALETTES ? forced : hour >= 7 && hour < 20 ? 'nido' : 'atardecer';
+export const themeName: ThemeName = forced && forced in PALETTES ? forced : hour >= 7 && hour < 20 ? 'algodon' : 'estrellada';
 export const colors = PALETTES[themeName];
 
+const DISPLAY = { algodon: 'Quicksand_700Bold', estrellada: 'Fraunces_600SemiBold' } as Record<string, string>;
 export const fonts = {
-  display: 'Sora_600SemiBold',
-  displayRegular: 'Sora_400Regular',
+  display: DISPLAY[themeName] ?? 'Sora_600SemiBold',
+  displayRegular: themeName === 'estrellada' ? 'Fraunces_400Regular' : themeName === 'algodon' ? 'Quicksand_500Medium' : 'Sora_400Regular',
   body: 'NunitoSans_400Regular',
   bodySemi: 'NunitoSans_600SemiBold',
   bodyBold: 'NunitoSans_700Bold',
 };
 
 const GRADIENTS = {
+  algodon: {
+    estudiar: ['#ffd8bf', '#ffc6a6'],
+    dormir: ['#d3defe', '#bccbfb'],
+    calma: ['#cdf2e0', '#b4e8d0'],
+    hipnosis: ['#e8deff', '#d6c8fc'],
+    noche: ['#ffe6c9', '#fdd3b3'],
+    hero: ['#ffd8bf', '#e9ddff'],
+  },
+  estrellada: {
+    estudiar: ['#ffffff17', '#ffffff0a'],
+    dormir: ['#ffffff17', '#ffffff0a'],
+    calma: ['#ffffff17', '#ffffff0a'],
+    hipnosis: ['#ffffff17', '#ffffff0a'],
+    noche: ['#ffffff17', '#ffffff0a'],
+    hero: ['#2c3a8c', '#5b3f9e'],
+  },
   noche: {
     estudiar: ['#3f6f86', '#24394f'],
     dormir: ['#3a5a86', '#223252'],
     calma: ['#4b7564', '#273f3a'],
     hipnosis: ['#6a5a9c', '#332a55'],
     noche: ['#8a6d55', '#3b3030'],
+    hero: ['#3f6f86', '#24394f'],
   },
   atardecer: {
     estudiar: ['#c0805e', '#6e4048'],
@@ -75,6 +113,7 @@ const GRADIENTS = {
     calma: ['#6f8a62', '#3c4a3a'],
     hipnosis: ['#9a6a9a', '#4a2f4e'],
     noche: ['#b8846a', '#5a3a3c'],
+    hero: ['#c0805e', '#6e4048'],
   },
   nido: {
     estudiar: ['#d9906c', '#b9644f'],
@@ -82,6 +121,10 @@ const GRADIENTS = {
     calma: ['#8fae88', '#6a8f68'],
     hipnosis: ['#b88ab8', '#8d6492'],
     noche: ['#d2a27c', '#a9775c'],
+    hero: ['#d9906c', '#b9644f'],
   },
 } as const;
 export const tileGradients = GRADIENTS[themeName];
+// Color de los íconos dentro de las tarjetas de inicio.
+export const tileIcon = (k: 'estudiar' | 'dormir' | 'calma' | 'hipnosis' | 'noche') =>
+  themeName === 'estrellada' ? colors.moon : themeName === 'algodon' ? { estudiar: '#c9734a', dormir: '#4f68b8', calma: '#3f8f6b', hipnosis: '#7b5fd0', noche: '#b5703f' }[k] : '#fffaf5';

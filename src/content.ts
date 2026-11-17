@@ -26,7 +26,7 @@ export const MEDITACIONES: Track[] = [
     duration: '3:50',
     free: true,
     icon: '1',
-  }, { title: 'The night before', subtitle: 'To sleep calmly before your exam', source: require('../assets/audio/meditaciones/en/1-night-before.mp3'), duration: '3:36' }),
+  }, { title: 'The night before', subtitle: 'To sleep calmly before your exam', source: require('../assets/audio/meditaciones/en/1-night-before.mp3'), duration: '3:09' }),
   bilingual({
     id: 'med-2',
     title: 'Antes de entrar',
@@ -36,7 +36,7 @@ export const MEDITACIONES: Track[] = [
     duration: '2:58',
     free: true,
     icon: '2',
-  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '2:48' }),
+  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '2:36' }),
   bilingual({
     id: 'med-3',
     title: 'Si me bloqueo',
@@ -46,7 +46,7 @@ export const MEDITACIONES: Track[] = [
     duration: '2:35',
     free: false,
     icon: '3',
-  }, { title: 'If my mind goes blank', subtitle: 'When a question freezes you', source: require('../assets/audio/meditaciones/en/3-mind-goes-blank.mp3'), duration: '2:32' }),
+  }, { title: 'If my mind goes blank', subtitle: 'When a question freezes you', source: require('../assets/audio/meditaciones/en/3-mind-goes-blank.mp3'), duration: '2:26' }),
   bilingual({
     id: 'med-4',
     title: 'Entre pruebas',
@@ -56,7 +56,7 @@ export const MEDITACIONES: Track[] = [
     duration: '2:48',
     free: false,
     icon: '4',
-  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '2:42' }),
+  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '2:18' }),
 ];
 
 export const SONIDOS: Track[] = [

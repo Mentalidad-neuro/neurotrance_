@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Eyebrow, H2, H3, Hint, Tile } from '../components/ui';
 import { MEDITACIONES } from '../content';
-import { daysUntil, formatDate, todayKey, useSettings } from '../store';
+import { daysUntil, formatDate, todayKey, useAccess, useSettings } from '../store';
 import { colors, fonts, tileGradients } from '../theme';
 
 export type Tab = 'inicio' | 'estudiar' | 'dormir' | 'hipnosis' | 'evaluaciones';
@@ -30,6 +30,7 @@ function thisWeek() {
 
 export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; openProfile: () => void; play: (id: string) => void }) {
   const { s } = useSettings();
+  const { inTrial, daysLeft, premium } = useAccess();
   const h = new Date().getHours();
   const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
   const days = daysUntil(s.examDate);
@@ -47,6 +48,16 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
       </View>
       <H2>¿Cómo quieres sentirte hoy?</H2>
       <Text style={st.warm}>{WARM[new Date().getDate() % WARM.length]}</Text>
+
+      {!premium && (
+        <View style={[st.trial, !inTrial && { borderColor: colors.moon }]}>
+          <Text style={st.trialText}>
+            {inTrial
+              ? `Prueba gratis: te ${daysLeft === 1 ? 'queda 1 día' : `quedan ${daysLeft} días`} con todo NeuroTrance libre.`
+              : 'Tu prueba gratis terminó. Suscríbete para seguir con todo NeuroTrance.'}
+          </Text>
+        </View>
+      )}
 
       <View style={st.count}>
         <View style={{ flex: 1 }}>
@@ -99,6 +110,8 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
 const st = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   warm: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20, color: colors.muted, marginTop: -6, marginBottom: 16 },
+  trial: { borderWidth: 1, borderColor: colors.teal, borderRadius: 18, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 12 },
+  trialText: { fontFamily: fonts.bodySemi, fontSize: 13, lineHeight: 19, color: colors.text },
   avatar: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.lilac, fontFamily: fonts.display, fontSize: 15 },
   count: { backgroundColor: colors.card, borderRadius: 26, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },

@@ -9,7 +9,7 @@ import { Sora_600SemiBold } from '@expo-google-fonts/sora/600SemiBold';
 import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans/400Regular';
 import { NunitoSans_600SemiBold } from '@expo-google-fonts/nunito-sans/600SemiBold';
 import { NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans/700Bold';
-import { SettingsProvider, useSettings } from './src/store';
+import { SettingsProvider, useAccess, useSettings } from './src/store';
 import { Track, findTrack } from './src/content';
 import { colors, fonts } from './src/theme';
 import { VERIFY_URL } from './src/config';
@@ -58,6 +58,7 @@ const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
 
 function Main() {
   const { ready, s, update } = useSettings();
+  const { isLocked } = useAccess();
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<Tab>('inicio');
   const [profile, setProfile] = useState(false);
@@ -81,7 +82,7 @@ function Main() {
   if (!s.onboarded || onb) return <Onboarding onDone={() => setOnb(false)} />;
 
   const open = (t: Track) => {
-    if (!t.source || (!t.free && !s.premium)) setPaywall(t);
+    if (!t.source || isLocked(t)) setPaywall(t);
     else setPlaying(t);
   };
   const playId = (id: string) => {

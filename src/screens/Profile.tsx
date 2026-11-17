@@ -1,13 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
+import CancelInfo from '../components/CancelInfo';
 import { Chip, Eyebrow, H2, H3, Hint, LinkButton, Row, Stepper, Toggle, TrackRow } from '../components/ui';
 import { GOALS, Track, findTrack } from '../content';
 import { addDays, addMinutes, defaultExamDate } from '../dates';
 import { scheduleBedtimeReminder } from '../notifications';
-import { formatDate, todayKey, useSettings } from '../store';
+import { formatDate, todayKey, useAccess, useSettings } from '../store';
 
 export default function Profile({ back, open, restartOnboarding }: { back: () => void; open: (t: Track) => void; restartOnboarding: () => void }) {
   const { s, update } = useSettings();
+  const { isLocked, inTrial, daysLeft } = useAccess();
   const exam = s.examDate ?? defaultExamDate();
   const favs = s.favorites.map(findTrack).filter(Boolean) as Track[];
 
@@ -73,7 +75,7 @@ export default function Profile({ back, open, restartOnboarding }: { back: () =>
       {favs.length ? (
         <View style={{ gap: 8 }}>
           {favs.map((t) => (
-            <TrackRow key={t.id} t={t} locked={!t.free && !s.premium} favorite onPress={() => open(t)} />
+            <TrackRow key={t.id} t={t} locked={isLocked(t)} favorite onPress={() => open(t)} />
           ))}
         </View>
       ) : (
@@ -86,6 +88,10 @@ export default function Profile({ back, open, restartOnboarding }: { back: () =>
           <Row title="Probar como suscriptora" sub="Desbloquea todo. No aparece en la app publicada." right={<Toggle label="Probar como suscriptora" value={s.premium} onChange={(v) => update({ premium: v })} />} />
         </>
       )}
+
+      <H3>Mi suscripción</H3>
+      <Hint>{s.premium ? 'Tienes la suscripción activa.' : inTrial ? `Prueba gratis: te quedan ${daysLeft} ${daysLeft === 1 ? 'día' : 'días'} con todo libre.` : 'Tu prueba gratis terminó.'}</Hint>
+      <CancelInfo />
 
       <View style={{ marginTop: 14 }}>
         <LinkButton label="Ver la bienvenida otra vez" onPress={restartOnboarding} />

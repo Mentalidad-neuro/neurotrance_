@@ -2,17 +2,18 @@ import React from 'react';
 import { View } from 'react-native';
 import { Eyebrow, H2, H3, Hint, TrackRow } from '../components/ui';
 import { HIPNOSIS, MEDITACIONES, SONIDOS, TRANCE, Track } from '../content';
-import { useSettings } from '../store';
+import { useAccess, useSettings } from '../store';
 import { colors } from '../theme';
 
 type P = { open: (t: Track) => void };
 
 function List({ items, open }: { items: Track[] } & P) {
   const { s } = useSettings();
+  const { isLocked } = useAccess();
   return (
     <View style={{ gap: 8 }}>
       {items.map((t) => (
-        <TrackRow key={t.id} t={t} locked={!t.free && !s.premium} favorite={s.favorites.includes(t.id)} onPress={() => open(t)} />
+        <TrackRow key={t.id} t={t} locked={isLocked(t)} favorite={s.favorites.includes(t.id)} onPress={() => open(t)} />
       ))}
     </View>
   );

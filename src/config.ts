@@ -7,4 +7,12 @@ export const MERCADO_PAGO_PLAN_URL = '';
 // Dirección del verificador de suscripción (carpeta server/). Vacío = aún no activo.
 export const VERIFY_URL = '';
 
+// Días con todo libre desde la primera vez que se abre la app (sin pedir tarjeta).
 export const TRIAL_DAYS = 7;
+
+// true = después de la prueba, los audios marcados "free" siguen gratis.
+// false = después de la prueba todo se bloquea hasta suscribirse.
+export const FREE_AFTER_TRIAL = true;
+
+// Precio que se muestra, por ejemplo '$2.990 al mes'. Vacío = no se muestra.
+export const PRICE_TEXT = '';

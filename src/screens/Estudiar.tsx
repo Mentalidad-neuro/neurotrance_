@@ -5,7 +5,7 @@ import { Eyebrow, H2, H3, Hint, Pill } from '../components/ui';
 import StudyList from '../components/StudyList';
 import { ESTUDIO, LONG_REST, POMODOROS, Track } from '../content';
 import { cancelPomodoroEnd, schedulePomodoroEnd } from '../notifications';
-import { useSettings } from '../store';
+import { useAccess, useSettings } from '../store';
 import { colors, fonts } from '../theme';
 
 type Phase = 'idle' | 'focus' | 'rest';
@@ -18,7 +18,8 @@ const mmss = (ms: number) => {
 };
 
 export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
-  const { s, addListening } = useSettings();
+  const { addListening } = useSettings();
+  const { isLocked } = useAccess();
   const [plan, setPlan] = useState(POMODOROS[0]);
   const [soundId, setSoundId] = useState<string | null>(ESTUDIO[0].id);
   const [phase, setPhase] = useState<Phase>('idle');
@@ -129,7 +130,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
   }
 
   function chooseSound(t: Track | null) {
-    if (t && !t.free && !s.premium) return locked(t);
+    if (t && isLocked(t)) return locked(t);
     setSoundId(t ? t.id : null);
   }
 
@@ -188,7 +189,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
       <View style={{ gap: 8 }}>
         {ESTUDIO.map((t) => {
           const on = t.id === soundId;
-          const isLocked = !t.free && !s.premium;
+          const lockedNow = isLocked(t);
           return (
             <Pressable key={t.id} onPress={() => chooseSound(t)} style={[st.item, on && st.itemOn]} accessibilityRole="radio" accessibilityState={{ selected: on }}>
               <View style={st.ic}>
@@ -198,11 +199,11 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
                   <Text style={st.itemTitle}>{t.title}</Text>
                   {t.tag ? <Pill text={t.tag} /> : null}
-                  {isLocked ? <Pill text="suscripción" soft /> : null}
+                  {lockedNow ? <Pill text="suscripción" soft /> : null}
                 </View>
                 <Text style={st.itemSub}>{t.subtitle}</Text>
               </View>
-              <Text style={st.radio}>{isLocked ? '🔒' : on ? '●' : '○'}</Text>
+              <Text style={st.radio}>{lockedNow ? '🔒' : on ? '●' : '○'}</Text>
             </Pressable>
           );
         })}

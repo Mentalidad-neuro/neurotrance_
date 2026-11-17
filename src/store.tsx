@@ -12,6 +12,7 @@ export type Settings = {
   favorites: string[];
   premium: boolean; // suscripción activa (Mercado Pago)
   premiumEmail: string | null;
+  firstOpen: number | null; // inicio de la prueba gratis
   visualMode: 'normal' | 'suave' | 'audio'; // accesibilidad para fotosensibilidad
   photoWarned: boolean;
   studyList: { id: string; text: string; done: boolean }[];
@@ -30,6 +31,7 @@ const DEFAULTS: Settings = {
   favorites: [],
   premium: false,
   premiumEmail: null,
+  firstOpen: null,
   visualMode: 'normal',
   photoWarned: false,
   studyList: [],
@@ -60,7 +62,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(KEY)
       .then((raw) => {
-        if (raw) setS({ ...DEFAULTS, ...JSON.parse(raw) });
+        const saved = raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+        if (!saved.firstOpen) saved.firstOpen = Date.now();
+        setS(saved);
       })
       .catch(() => {})
       .finally(() => setReady(true));
@@ -110,4 +114,21 @@ export function formatDate(dateStr: string | null) {
   if (!dateStr) return 'Sin fecha';
   const [, m, d] = dateStr.split('-').map(Number);
   return `${d} de ${MONTHS[m - 1]}`;
+}
+
+// Acceso a cada audio: suscripción, prueba gratis vigente o audio gratis (si así está configurado).
+import { FREE_AFTER_TRIAL, TRIAL_DAYS } from './config';
+
+export function trialDaysLeft(firstOpen: number | null) {
+  if (!firstOpen) return TRIAL_DAYS;
+  const left = TRIAL_DAYS - (Date.now() - firstOpen) / 864e5;
+  return Math.max(0, Math.ceil(left));
+}
+
+export function useAccess() {
+  const { s } = useSettings();
+  const daysLeft = trialDaysLeft(s.firstOpen);
+  const inTrial = !s.premium && daysLeft > 0;
+  const isLocked = (t: { free: boolean; source?: number }) => !s.premium && !inTrial && !(FREE_AFTER_TRIAL && t.free);
+  return { inTrial, daysLeft, isLocked, premium: s.premium };
 }

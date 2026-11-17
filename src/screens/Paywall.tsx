@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Cta, LinkButton, Logo } from '../components/ui';
+import CancelInfo from '../components/CancelInfo';
 import type { Track } from '../content';
-import { MERCADO_PAGO_PLAN_URL, TRIAL_DAYS, VERIFY_URL } from '../config';
-import { useSettings } from '../store';
+import { MERCADO_PAGO_PLAN_URL, PRICE_TEXT, TRIAL_DAYS, VERIFY_URL } from '../config';
+import { useAccess, useSettings } from '../store';
 import { colors, fonts } from '../theme';
 
 // Pantalla de suscripción. El cobro se hace con un plan de Mercado Pago (con días de prueba gratis).
@@ -14,6 +15,7 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
   const insets = useSafeAreaInsets();
   const notRecorded = track && !track.source;
   const { update } = useSettings();
+  const { inTrial, daysLeft } = useAccess();
   const [askEmail, setAskEmail] = useState(false);
   const [email, setEmail] = useState('');
   const [checking, setChecking] = useState(false);
@@ -42,6 +44,7 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
       <View style={{ alignSelf: 'flex-start' }}>
         <LinkButton label="‹ Volver" onPress={onClose} />
       </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
       <View style={{ alignItems: 'center', marginTop: 30 }}>
         <Logo size={88} />
       </View>
@@ -53,10 +56,11 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
       ) : (
         <>
           <View style={st.badge}>
-            <Text style={st.badgeText}>{TRIAL_DAYS} DÍAS GRATIS</Text>
+            <Text style={st.badgeText}>{inTrial ? `PRUEBA GRATIS: QUEDAN ${daysLeft} ${daysLeft === 1 ? 'DÍA' : 'DÍAS'}` : 'TU PRUEBA GRATIS TERMINÓ'}</Text>
           </View>
           <Text style={st.h}>NeuroTrance completo</Text>
-          <Text style={st.p}>{track ? `"${track.title}" es parte de la suscripción.` : ''} Con la suscripción tienes:</Text>
+          <Text style={st.p}>{track ? `Para seguir escuchando "${track.title}", suscríbete.` : ''} Con la suscripción tienes:</Text>
+          {PRICE_TEXT ? <Text style={st.price}>{PRICE_TEXT}</Text> : null}
           <View style={{ gap: 10, marginTop: 8 }}>
             {['Todas las meditaciones para evaluaciones', 'Todos los sonidos para estudiar y dormir', 'Las sesiones de hipnosis a medida que salen', 'Nuevos audios cada mes'].map((b) => (
               <Text key={b} style={st.li}>
@@ -65,7 +69,7 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
               </Text>
             ))}
           </View>
-          <View style={{ flex: 1 }} />
+          <View style={{ flex: 1, minHeight: 24 }} />
           {askEmail ? (
             <View style={{ gap: 10 }}>
               <Text style={st.p}>Escribe el correo con el que te suscribiste en Mercado Pago.</Text>
@@ -83,13 +87,13 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
             </View>
           ) : (
             <Cta
-              label={ready ? `Probar ${TRIAL_DAYS} días gratis` : 'Muy pronto'}
+              label={ready ? 'Suscribirme' : 'Muy pronto'}
               onPress={() => (ready ? Linking.openURL(MERCADO_PAGO_PLAN_URL) : onClose())}
             />
           )}
           {msg ? <Text style={[st.small, { color: colors.moon }]}>{msg}</Text> : null}
           <Text style={st.small}>
-            Sin registro. Pagas con Mercado Pago. No se cobra nada durante los {TRIAL_DAYS} días y puedes cancelar cuando quieras antes de que terminen.
+            Los primeros {TRIAL_DAYS} días son gratis, sin tarjeta. Después pagas con Mercado Pago, una vez al mes, hasta que canceles. No necesitas crear usuario en la app.
           </Text>
           {ready && !askEmail ? (
             <Pressable onPress={() => setAskEmail(true)} hitSlop={8}>
@@ -97,8 +101,10 @@ export default function Paywall({ track, onClose }: { track: Track | null; onClo
             </Pressable>
           ) : null}
           {!ready ? <Text style={[st.small, { color: colors.lilac }]}>La suscripción se activará muy pronto.</Text> : null}
+          <CancelInfo />
         </>
       )}
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -111,5 +117,6 @@ const st = StyleSheet.create({
   badge: { alignSelf: 'center', backgroundColor: colors.tealSoft, borderRadius: 99, paddingHorizontal: 12, paddingVertical: 4, marginTop: 16 },
   badgeText: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1, color: colors.teal },
   input: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 12, color: colors.text, fontFamily: fonts.bodySemi, fontSize: 15 },
+  price: { fontFamily: fonts.display, fontSize: 22, color: colors.moon, textAlign: 'center', marginTop: 8 },
   small: { fontFamily: fonts.body, fontSize: 12, color: colors.muted, textAlign: 'center', marginTop: 10 },
 });

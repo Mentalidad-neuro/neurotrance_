@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -16,7 +16,7 @@ import { Fraunces_600SemiBold } from '@expo-google-fonts/fraunces/600SemiBold';
 import Backdrop from './src/components/Backdrop';
 import { SettingsProvider, useAccess, useSettings } from './src/store';
 import { Track, findTrack } from './src/content';
-import { colors, fonts } from './src/theme';
+import { colors, fonts, themeName } from './src/theme';
 import { VERIFY_URL } from './src/config';
 import Onboarding from './src/screens/Onboarding';
 import Home, { Tab } from './src/screens/Home';
@@ -158,13 +158,18 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style={colors.statusBar} />
-      {loaded ? (
-        <SettingsProvider>
-          <Main />
-        </SettingsProvider>
-      ) : (
-        <View style={{ flex: 1, backgroundColor: colors.sky }} />
-      )}
+      {/* En computador, la app se muestra con ancho de celular, centrada. */}
+      <View style={st.outer}>
+        <View style={st.phone}>
+          {loaded ? (
+            <SettingsProvider>
+              <Main />
+            </SettingsProvider>
+          ) : (
+            <View style={{ flex: 1, backgroundColor: colors.sky }} />
+          )}
+        </View>
+      </View>
     </SafeAreaProvider>
   );
 }
@@ -172,5 +177,13 @@ export default function App() {
 const st = StyleSheet.create({
   tabs: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: colors.sky2, paddingTop: 10 },
   tab: { flex: 1, alignItems: 'center', gap: 4 },
-  tabText: { fontFamily: fonts.bodySemi, fontSize: 10 },
+  tabText: { fontFamily: fonts.bodySemi, fontSize: 11 },
+  outer: { flex: 1, alignItems: 'center', backgroundColor: Platform.OS === 'web' ? (themeName === 'estrellada' ? '#070a20' : '#e4ebf1') : colors.sky },
+  phone: {
+    flex: 1,
+    width: '100%',
+    maxWidth: Platform.OS === 'web' ? 460 : undefined,
+    overflow: 'hidden',
+    ...(Platform.OS === 'web' ? { boxShadow: '0 0 40px rgba(0,0,0,0.18)' } : null),
+  },
 });

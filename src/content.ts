@@ -5,7 +5,7 @@ export type Track = {
   id: string;
   title: string;
   subtitle: string;
-  kind: 'meditacion' | 'dormir' | 'hipnosis';
+  kind: 'meditacion' | 'dormir' | 'hipnosis' | 'estudiar';
   source?: number; // require(...) del archivo; vacío = aún no grabado
   duration?: string; // texto para mostrar
   loop?: boolean; // los sonidos para dormir se repiten hasta el temporizador
@@ -132,7 +132,72 @@ export const HIPNOSIS: Track[] = [
   },
 ];
 
-export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS];
+export const ESTUDIO: Track[] = [
+  {
+    id: 'est-beta',
+    title: 'Ondas beta',
+    subtitle: 'Atención sostenida para leer y resolver ejercicios',
+    kind: 'estudiar',
+    source: require('../assets/audio/estudiar/ondas-beta.mp3'),
+    loop: true,
+    free: true,
+    tag: 'audífonos',
+    icon: 'β',
+  },
+  {
+    id: 'est-marron',
+    title: 'Ruido marrón',
+    subtitle: 'Tapa las distracciones sin cansar el oído',
+    kind: 'estudiar',
+    source: require('../assets/audio/estudiar/ruido-marron.mp3'),
+    loop: true,
+    free: true,
+    icon: '≋',
+  },
+  {
+    id: 'est-gamma',
+    title: 'Ondas gamma 40 Hz',
+    subtitle: 'Para activar la mente al repasar y memorizar',
+    kind: 'estudiar',
+    source: require('../assets/audio/estudiar/ondas-gamma.mp3'),
+    loop: true,
+    free: false,
+    tag: 'audífonos',
+    icon: 'γ',
+  },
+  {
+    id: 'est-alfa',
+    title: 'Ondas alfa',
+    subtitle: 'Estudio tranquilo, sin tensión',
+    kind: 'estudiar',
+    source: require('../assets/audio/estudiar/ondas-alfa.mp3'),
+    loop: true,
+    free: false,
+    tag: 'audífonos',
+    icon: 'α',
+  },
+  {
+    id: 'est-lluvia',
+    title: 'Lluvia para estudiar',
+    subtitle: 'Un fondo suave y parejo',
+    kind: 'estudiar',
+    source: require('../assets/audio/dormir/lluvia-suave.mp3'),
+    loop: true,
+    free: false,
+    icon: '☂',
+  },
+];
+
+// Pomodoro: minutos de concentración y su descanso.
+export const POMODOROS = [
+  { focus: 25, rest: 5 },
+  { focus: 35, rest: 7 },
+  { focus: 45, rest: 10 },
+  { focus: 55, rest: 10 },
+];
+export const LONG_REST = 15; // después de 4 bloques
+
+export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS, ...ESTUDIO];
 export const findTrack = (id: string) => ALL_TRACKS.find((t) => t.id === id);
 
 export const GOALS = ['Dormir', 'Ansiedad', 'Concentrarme', 'Recordar lo estudiado', 'Bloqueo en la prueba'];

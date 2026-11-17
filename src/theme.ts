@@ -21,6 +21,7 @@ export const fonts = {
 };
 
 export const tileGradients = {
+  estudiar: ['#3f6f86', '#24394f'],
   dormir: ['#3a5a86', '#223252'],
   calma: ['#4b7564', '#273f3a'],
   hipnosis: ['#6a5a9c', '#332a55'],

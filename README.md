@@ -6,6 +6,7 @@ App para estudiantes: meditaciones de 3 minutos para evaluaciones, sonidos para 
 
 - **Bienvenida en 3 pasos**: qué te cuesta, fecha de la evaluación y hora de dormir.
 - **Inicio**: cuenta regresiva a la evaluación, accesos rápidos y "Tu semana" con minutos reales escuchados.
+- **Estudiar**: pomodoros de 25, 35, 45 o 55 minutos (descansos de 5, 7 o 10 min y uno largo de 15 tras el cuarto bloque), campana suave al cambiar, aviso en segundo plano y 5 sonidos de concentración: ondas beta, ruido marrón (gratis), ondas gamma 40 Hz, ondas alfa y lluvia (suscripción).
 - **Evaluaciones**: 4 meditaciones grabadas (2 gratis, 2 con suscripción).
 - **Dormir**: 4 sonidos en bucle (lluvia, ruido rosa, olas, ondas delta binaurales) con temporizador de 15 min, 30 min, 1 hora o toda la noche; el volumen baja de a poco en los últimos 30 segundos. Siguen sonando con la pantalla bloqueada.
 - **Hipnosis**: 3 sesiones listadas como "por grabar".

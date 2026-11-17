@@ -5,7 +5,7 @@ import { MEDITACIONES } from '../content';
 import { daysUntil, formatDate, todayKey, useSettings } from '../store';
 import { colors, fonts, tileGradients } from '../theme';
 
-export type Tab = 'inicio' | 'dormir' | 'hipnosis' | 'evaluaciones';
+export type Tab = 'inicio' | 'estudiar' | 'dormir' | 'hipnosis' | 'evaluaciones';
 
 const DAY_LETTERS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
@@ -54,6 +54,7 @@ export default function Home({ go, openProfile, play }: { go: (t: Tab) => void; 
 
       <H3>Elige</H3>
       <View style={st.grid}>
+        <Tile wide title="Estudiar con foco" sub="Pomodoros de 25 a 55 min con sonidos para concentrarte" grad={tileGradients.estudiar} onPress={() => go('estudiar')} />
         <Tile title="Dormir" sub="Sonidos y apagado automático" grad={tileGradients.dormir} onPress={() => go('dormir')} />
         <Tile title="Calmarme ahora" sub="Meditaciones de 3 min" grad={tileGradients.calma} onPress={() => go('evaluaciones')} />
         <Tile title="Hipnosis" sub="Sueño, ansiedad, memoria" grad={tileGradients.hipnosis} onPress={() => go('hipnosis')} />

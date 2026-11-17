@@ -13,11 +13,22 @@ import Onboarding from './src/screens/Onboarding';
 import Home, { Tab } from './src/screens/Home';
 import { Dormir, Evaluaciones, Hipnosis } from './src/screens/Lists';
 import Profile from './src/screens/Profile';
+import Estudiar from './src/screens/Estudiar';
 import Player from './src/screens/Player';
 import Paywall from './src/screens/Paywall';
 
 const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
   { key: 'inicio', label: 'Inicio', icon: <Path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z" /> },
+  {
+    key: 'estudiar',
+    label: 'Estudiar',
+    icon: (
+      <>
+        <Path d="M4 6.5C6.5 5 9.5 5 12 6.5v12C9.5 17 6.5 17 4 18.5z" />
+        <Path d="M20 6.5C17.5 5 14.5 5 12 6.5v12c2.5-1.5 5.5-1.5 8 0z" />
+      </>
+    ),
+  },
   { key: 'dormir', label: 'Dormir', icon: <Path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /> },
   {
     key: 'hipnosis',
@@ -71,13 +82,21 @@ function Main() {
   else if (tab === 'inicio') screen = <Home go={go} openProfile={() => setProfile(true)} play={playId} />;
   else if (tab === 'dormir') screen = <Dormir open={open} />;
   else if (tab === 'hipnosis') screen = <Hipnosis open={open} />;
-  else screen = <Evaluaciones open={open} />;
+  else if (tab === 'evaluaciones') screen = <Evaluaciones open={open} />;
+  const studyVisible = !profile && tab === 'estudiar';
+  const pad = { paddingTop: insets.top + 18, paddingHorizontal: 18, paddingBottom: 24 };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.sky }}>
-      <ScrollView key={profile ? 'perfil' : tab} contentContainerStyle={{ paddingTop: insets.top + 18, paddingHorizontal: 18, paddingBottom: 24 }}>
-        {screen}
+      {/* Estudiar queda siempre montada para que el pomodoro siga corriendo al cambiar de pestaña. */}
+      <ScrollView style={{ display: studyVisible ? 'flex' : 'none' }} contentContainerStyle={pad}>
+        <Estudiar locked={(t) => setPaywall(t)} />
       </ScrollView>
+      {!studyVisible && (
+        <ScrollView key={profile ? 'perfil' : tab} contentContainerStyle={pad}>
+          {screen}
+        </ScrollView>
+      )}
       <View style={[st.tabs, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         {TABS.map((t) => {
           const on = !profile && tab === t.key;
@@ -87,7 +106,9 @@ function Main() {
               <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={1.8}>
                 {t.icon}
               </Svg>
-              <Text style={[st.tabText, { color: c }]}>{t.label}</Text>
+              <Text style={[st.tabText, { color: c }]} numberOfLines={1}>
+                {t.label}
+              </Text>
             </Pressable>
           );
         })}
@@ -117,5 +138,5 @@ export default function App() {
 const st = StyleSheet.create({
   tabs: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: colors.sky2, paddingTop: 10 },
   tab: { flex: 1, alignItems: 'center', gap: 4 },
-  tabText: { fontFamily: fonts.bodySemi, fontSize: 11 },
+  tabText: { fontFamily: fonts.bodySemi, fontSize: 10 },
 });

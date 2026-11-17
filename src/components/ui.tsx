@@ -29,10 +29,10 @@ export function Logo({ size = 96 }: { size?: number }) {
   );
 }
 
-export function Tile({ title, sub, grad, onPress }: { title: string; sub: string; grad: readonly [string, string]; onPress: () => void }) {
+export function Tile({ title, sub, grad, onPress, wide }: { title: string; sub: string; grad: readonly [string, string]; onPress: () => void; wide?: boolean }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [s.tileWrap, pressed && { opacity: 0.85 }]} accessibilityRole="button">
-      <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.tile}>
+    <Pressable onPress={onPress} style={({ pressed }) => [s.tileWrap, wide && { width: '100%' }, pressed && { opacity: 0.85 }]} accessibilityRole="button">
+      <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[s.tile, wide && { minHeight: 84 }]}>
         <Text style={s.tileTitle}>{title}</Text>
         <Text style={s.tileSub}>{sub}</Text>
       </LinearGradient>

@@ -1,24 +1,35 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
+const BEDTIME_ID = 'recordatorio-noche';
+const POMODORO_ID = 'pomodoro-fin';
+
+async function ensurePermission() {
+  const current = await Notifications.getPermissionsAsync();
+  if (current.granted) return true;
+  const perm = await Notifications.requestPermissionsAsync();
+  return perm.granted;
+}
+
+async function ensureChannel(id: string, name: string) {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync(id, { name, importance: Notifications.AndroidImportance.DEFAULT });
+  }
+}
+
 // Recordatorio de noche: 15 minutos antes de la hora de dormir.
 export async function scheduleBedtimeReminder(bedtime: string, enabled: boolean) {
   if (Platform.OS === 'web') return false;
   try {
-    await Notifications.cancelAllScheduledNotificationsAsync();
+    await Notifications.cancelScheduledNotificationAsync(BEDTIME_ID).catch(() => {});
     if (!enabled) return true;
-    const perm = await Notifications.requestPermissionsAsync();
-    if (!perm.granted) return false;
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('noche', {
-        name: 'Recordatorio de noche',
-        importance: Notifications.AndroidImportance.DEFAULT,
-      });
-    }
+    if (!(await ensurePermission())) return false;
+    await ensureChannel('noche', 'Recordatorio de noche');
     const [h, m] = bedtime.split(':').map(Number);
     let total = h * 60 + m - 15;
     if (total < 0) total += 24 * 60;
     await Notifications.scheduleNotificationAsync({
+      identifier: BEDTIME_ID,
       content: {
         title: 'Es hora de bajar el ritmo',
         body: 'Tu sonido para dormir te espera. Lo que estudiaste hoy se guarda mientras descansas.',
@@ -34,4 +45,28 @@ export async function scheduleBedtimeReminder(bedtime: string, enabled: boolean)
   } catch {
     return false;
   }
+}
+
+// Aviso de fin de bloque Pomodoro, por si la app está en segundo plano.
+export async function schedulePomodoroEnd(at: Date, title: string, body: string) {
+  if (Platform.OS === 'web') return;
+  try {
+    await cancelPomodoroEnd();
+    if (!(await ensurePermission())) return;
+    await ensureChannel('estudio', 'Pomodoro');
+    await Notifications.scheduleNotificationAsync({
+      identifier: POMODORO_ID,
+      content: { title, body },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: at,
+        channelId: Platform.OS === 'android' ? 'estudio' : undefined,
+      },
+    });
+  } catch {}
+}
+
+export async function cancelPomodoroEnd() {
+  if (Platform.OS === 'web') return;
+  await Notifications.cancelScheduledNotificationAsync(POMODORO_ID).catch(() => {});
 }

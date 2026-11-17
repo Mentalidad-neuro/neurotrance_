@@ -1,0 +1,164 @@
+import React from 'react';
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Circle, Path } from 'react-native-svg';
+import { colors, fonts } from '../theme';
+import type { Track } from '../content';
+
+export function Eyebrow({ children, color }: { children: React.ReactNode; color?: string }) {
+  return <Text style={[s.eyebrow, color ? { color } : null]}>{children}</Text>;
+}
+export function H2({ children }: { children: React.ReactNode }) {
+  return <Text style={s.h2}>{children}</Text>;
+}
+export function H3({ children }: { children: React.ReactNode }) {
+  return <Text style={s.h3}>{children}</Text>;
+}
+export function Hint({ children }: { children: React.ReactNode }) {
+  return <Text style={s.hint}>{children}</Text>;
+}
+
+export function Logo({ size = 96 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 96 96">
+      <Circle cx={58} cy={34} r={18} fill={colors.moon} />
+      <Circle cx={66} cy={28} r={15} fill="#2c3766" />
+      <Path d="M8 66c6 0 8-12 14-12s8 12 14 12 8-12 14-12 8 12 14 12 8-12 14-12 6 6 10 6" stroke={colors.lilac} strokeWidth={4} fill="none" strokeLinecap="round" />
+      <Path d="M14 80c8 0 12-6 20-6s12 6 20 6 12-6 20-6" stroke={colors.teal} strokeWidth={3.5} fill="none" strokeLinecap="round" opacity={0.8} />
+    </Svg>
+  );
+}
+
+export function Tile({ title, sub, grad, onPress }: { title: string; sub: string; grad: readonly [string, string]; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [s.tileWrap, pressed && { opacity: 0.85 }]} accessibilityRole="button">
+      <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.tile}>
+        <Text style={s.tileTitle}>{title}</Text>
+        <Text style={s.tileSub}>{sub}</Text>
+      </LinearGradient>
+    </Pressable>
+  );
+}
+
+export function TrackRow({ t, locked, onPress, favorite }: { t: Track; locked: boolean; onPress: () => void; favorite?: boolean }) {
+  const soon = !t.source;
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [s.item, pressed && { opacity: 0.8 }]} accessibilityRole="button" accessibilityLabel={t.title}>
+      <View style={s.ic}>
+        <Text style={s.icText}>{t.icon}</Text>
+      </View>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+          <Text style={s.itemTitle}>{t.title}</Text>
+          {favorite ? <Text style={{ color: colors.moon }}>♥</Text> : null}
+          {t.tag ? <Pill text={t.tag} /> : null}
+          {soon ? <Pill text="por grabar" soft /> : locked ? <Pill text="suscripción" soft /> : null}
+        </View>
+        <Text style={s.itemSub}>{t.subtitle}</Text>
+      </View>
+      <Text style={s.dur}>{locked && !soon ? '🔒' : t.loop ? '∞' : t.duration ?? ''}</Text>
+    </Pressable>
+  );
+}
+
+export function Pill({ text, soft }: { text: string; soft?: boolean }) {
+  return (
+    <View style={[s.pill, soft && { backgroundColor: '#b7a6f022' }]}>
+      <Text style={[s.pillText, soft && { color: colors.lilac }]}>{text.toUpperCase()}</Text>
+    </View>
+  );
+}
+
+export function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={[s.chip, on && s.chipOn]} accessibilityRole="checkbox" accessibilityState={{ checked: on }}>
+      <Text style={[s.chipText, on && { color: colors.lilac }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Toggle({ value, onChange, label }: { value: boolean; onChange: (v: boolean) => void; label: string }) {
+  return (
+    <Pressable onPress={() => onChange(!value)} accessibilityRole="switch" accessibilityState={{ checked: value }} accessibilityLabel={label} style={[s.sw, value && { backgroundColor: colors.teal }]}>
+      <View style={[s.knob, value && { left: 21 }]} />
+    </Pressable>
+  );
+}
+
+export function Row({ title, sub, right, style }: { title: string; sub?: string; right?: React.ReactNode; style?: ViewStyle }) {
+  return (
+    <View style={[s.row, style]}>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text style={s.itemTitle}>{title}</Text>
+        {sub ? <Text style={s.itemSub}>{sub}</Text> : null}
+      </View>
+      {right}
+    </View>
+  );
+}
+
+export function Cta({ label, onPress, style }: { label: string; onPress: () => void; style?: ViewStyle }) {
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [s.cta, style, pressed && { opacity: 0.85 }]} accessibilityRole="button">
+      <Text style={s.ctaText}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function LinkButton({ label, onPress, color }: { label: string; onPress: () => void; color?: string }) {
+  return (
+    <Pressable onPress={onPress} style={{ paddingVertical: 10 }} accessibilityRole="button" hitSlop={8}>
+      <Text style={[s.link, color ? { color } : null]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Stepper({ label, value, onMinus, onPlus }: { label: string; value: string; onMinus: () => void; onPlus: () => void }) {
+  return (
+    <View style={{ gap: 6 }}>
+      <Text style={s.fieldLabel}>{label}</Text>
+      <View style={s.stepper}>
+        <Pressable onPress={onMinus} style={s.stepBtn} accessibilityLabel={`Restar a ${label}`} hitSlop={6}>
+          <Text style={s.stepBtnText}>−</Text>
+        </Pressable>
+        <Text style={s.stepValue}>{value}</Text>
+        <Pressable onPress={onPlus} style={s.stepBtn} accessibilityLabel={`Sumar a ${label}`} hitSlop={6}>
+          <Text style={s.stepBtnText}>+</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+export const s = StyleSheet.create({
+  eyebrow: { fontFamily: fonts.bodyBold, fontSize: 11, letterSpacing: 1.3, textTransform: 'uppercase', color: colors.muted },
+  h2: { fontFamily: fonts.display, fontSize: 24, color: colors.text, marginTop: 4, marginBottom: 14 },
+  h3: { fontFamily: fonts.display, fontSize: 16, color: colors.text, marginTop: 22, marginBottom: 10 },
+  hint: { fontFamily: fonts.body, color: colors.muted, fontSize: 13, lineHeight: 20, marginTop: 8 },
+  tileWrap: { width: '48.5%', borderRadius: 18, overflow: 'hidden' },
+  tile: { minHeight: 104, padding: 14, justifyContent: 'space-between', borderRadius: 18 },
+  tileTitle: { fontFamily: fonts.display, fontSize: 15, color: colors.text },
+  tileSub: { fontFamily: fonts.body, fontSize: 12, color: '#ffffffb3' },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 16, padding: 12 },
+  ic: { width: 42, height: 42, borderRadius: 12, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
+  icText: { color: colors.teal, fontFamily: fonts.display, fontSize: 16 },
+  itemTitle: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.text },
+  itemSub: { fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 2 },
+  dur: { fontFamily: fonts.body, fontSize: 12, color: colors.muted },
+  pill: { backgroundColor: '#7fd1c322', borderRadius: 99, paddingHorizontal: 7, paddingVertical: 2 },
+  pillText: { fontFamily: fonts.bodyBold, fontSize: 9, letterSpacing: 0.6, color: colors.teal },
+  chip: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingVertical: 11, paddingHorizontal: 14 },
+  chipOn: { backgroundColor: '#c4b5ee33', borderColor: colors.lilac },
+  chipText: { fontFamily: fonts.bodySemi, fontSize: 14, color: colors.text },
+  sw: { width: 46, height: 28, borderRadius: 99, backgroundColor: colors.line, justifyContent: 'center' },
+  knob: { position: 'absolute', left: 3, width: 22, height: 22, borderRadius: 11, backgroundColor: colors.text },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.card, borderRadius: 16, padding: 14 },
+  cta: { backgroundColor: colors.moon, borderRadius: 16, paddingVertical: 15, alignItems: 'center' },
+  ctaText: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.sky },
+  link: { fontFamily: fonts.bodySemi, fontSize: 14, color: colors.muted, textAlign: 'center' },
+  fieldLabel: { fontFamily: fonts.bodySemi, fontSize: 13, color: colors.muted },
+  stepper: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: 6 },
+  stepBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: colors.sky2, alignItems: 'center', justifyContent: 'center' },
+  stepBtnText: { color: colors.text, fontSize: 22, fontFamily: fonts.bodySemi },
+  stepValue: { flex: 1, textAlign: 'center', color: colors.text, fontFamily: fonts.bodyBold, fontSize: 17 },
+});

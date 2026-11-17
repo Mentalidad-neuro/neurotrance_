@@ -1,0 +1,81 @@
+import React from 'react';
+import { View } from 'react-native';
+import { Chip, Eyebrow, H2, H3, Hint, LinkButton, Row, Stepper, Toggle, TrackRow } from '../components/ui';
+import { GOALS, Track, findTrack } from '../content';
+import { addDays, addMinutes, defaultExamDate } from '../dates';
+import { scheduleBedtimeReminder } from '../notifications';
+import { formatDate, todayKey, useSettings } from '../store';
+
+export default function Profile({ back, open, restartOnboarding }: { back: () => void; open: (t: Track) => void; restartOnboarding: () => void }) {
+  const { s, update } = useSettings();
+  const exam = s.examDate ?? defaultExamDate();
+  const favs = s.favorites.map(findTrack).filter(Boolean) as Track[];
+
+  const setBedtime = (b: string) => {
+    update({ bedtime: b });
+    scheduleBedtimeReminder(b, s.reminder);
+  };
+  const setReminder = (v: boolean) => {
+    update({ reminder: v });
+    scheduleBedtimeReminder(s.bedtime, v);
+  };
+
+  return (
+    <View>
+      <View style={{ alignSelf: 'flex-start' }}>
+        <LinkButton label="‹ Inicio" onPress={back} />
+      </View>
+      <Eyebrow>Mi espacio</Eyebrow>
+      <H2>Ajustes para tu calma</H2>
+
+      <View style={{ gap: 12 }}>
+        <Stepper
+          label="Mi próxima evaluación"
+          value={formatDate(exam)}
+          onMinus={() => {
+            const d = addDays(exam, -1);
+            if (d >= todayKey()) update({ examDate: d });
+          }}
+          onPlus={() => update({ examDate: addDays(exam, 1) })}
+        />
+        <Stepper label="Hora de acostarme" value={s.bedtime} onMinus={() => setBedtime(addMinutes(s.bedtime, -15))} onPlus={() => setBedtime(addMinutes(s.bedtime, 15))} />
+      </View>
+
+      <H3>Noche</H3>
+      <View style={{ gap: 8 }}>
+        <Row title="Recordatorio de noche" sub={`Te avisamos a las ${addMinutes(s.bedtime, -15)}`} right={<Toggle label="Recordatorio de noche" value={s.reminder} onChange={setReminder} />} />
+        <Row title="Pantalla oscura al dormir" sub="La pantalla se oscurece y el sonido sigue" right={<Toggle label="Pantalla oscura" value={s.dimScreen} onChange={(v) => update({ dimScreen: v })} />} />
+        <Row title="Aviso de audífonos" sub="Para las ondas binaurales" right={<Toggle label="Aviso de audífonos" value={s.headphoneTip} onChange={(v) => update({ headphoneTip: v })} />} />
+      </View>
+
+      <H3>Lo que me cuesta</H3>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {GOALS.map((g) => (
+          <Chip key={g} label={g} on={s.goals.includes(g)} onPress={() => update({ goals: s.goals.includes(g) ? s.goals.filter((x) => x !== g) : [...s.goals, g] })} />
+        ))}
+      </View>
+
+      <H3>Mis favoritos</H3>
+      {favs.length ? (
+        <View style={{ gap: 8 }}>
+          {favs.map((t) => (
+            <TrackRow key={t.id} t={t} locked={!t.free && !s.premium} favorite onPress={() => open(t)} />
+          ))}
+        </View>
+      ) : (
+        <Hint>Toca el corazón en cualquier audio para guardarlo aquí.</Hint>
+      )}
+
+      {__DEV__ && (
+        <>
+          <H3>Solo para pruebas</H3>
+          <Row title="Probar como suscriptora" sub="Desbloquea todo. No aparece en la app publicada." right={<Toggle label="Probar como suscriptora" value={s.premium} onChange={(v) => update({ premium: v })} />} />
+        </>
+      )}
+
+      <View style={{ marginTop: 14 }}>
+        <LinkButton label="Ver la bienvenida otra vez" onPress={restartOnboarding} />
+      </View>
+    </View>
+  );
+}

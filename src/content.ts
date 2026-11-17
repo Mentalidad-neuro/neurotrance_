@@ -1,0 +1,138 @@
+// Todo el contenido de audio de la app en un solo lugar.
+// "free: true" = disponible sin suscripción. El resto queda para la suscripción.
+
+export type Track = {
+  id: string;
+  title: string;
+  subtitle: string;
+  kind: 'meditacion' | 'dormir' | 'hipnosis';
+  source?: number; // require(...) del archivo; vacío = aún no grabado
+  duration?: string; // texto para mostrar
+  loop?: boolean; // los sonidos para dormir se repiten hasta el temporizador
+  free: boolean;
+  tag?: string;
+  icon: string;
+};
+
+export const MEDITACIONES: Track[] = [
+  {
+    id: 'med-1',
+    title: 'La noche anterior',
+    subtitle: 'Para dormir tranquila antes de la evaluación',
+    kind: 'meditacion',
+    source: require('../assets/audio/meditaciones/1-noche-anterior.mp3'),
+    duration: '3:50',
+    free: true,
+    icon: '1',
+  },
+  {
+    id: 'med-2',
+    title: 'Antes de entrar',
+    subtitle: 'En la fila o sentada esperando',
+    kind: 'meditacion',
+    source: require('../assets/audio/meditaciones/2-antes-de-entrar.mp3'),
+    duration: '2:58',
+    free: true,
+    icon: '2',
+  },
+  {
+    id: 'med-3',
+    title: 'Si me bloqueo',
+    subtitle: 'Cuando una pregunta te paraliza',
+    kind: 'meditacion',
+    source: require('../assets/audio/meditaciones/3-bloqueo-en-la-prueba.mp3'),
+    duration: '2:35',
+    free: false,
+    icon: '3',
+  },
+  {
+    id: 'med-4',
+    title: 'Entre pruebas',
+    subtitle: 'Para soltar la anterior y empezar de nuevo',
+    kind: 'meditacion',
+    source: require('../assets/audio/meditaciones/4-entre-pruebas.mp3'),
+    duration: '2:48',
+    free: false,
+    icon: '4',
+  },
+];
+
+export const SONIDOS: Track[] = [
+  {
+    id: 'snd-lluvia',
+    title: 'Lluvia suave',
+    subtitle: 'Tapa los ruidos de la casa',
+    kind: 'dormir',
+    source: require('../assets/audio/dormir/lluvia-suave.mp3'),
+    loop: true,
+    free: true,
+    icon: '≋',
+  },
+  {
+    id: 'snd-rosa',
+    title: 'Ruido rosa',
+    subtitle: 'Acompaña el sueño profundo, donde se guarda lo estudiado',
+    kind: 'dormir',
+    source: require('../assets/audio/dormir/ruido-rosa.mp3'),
+    loop: true,
+    free: true,
+    tag: 'memoria',
+    icon: '∿',
+  },
+  {
+    id: 'snd-olas',
+    title: 'Olas del mar',
+    subtitle: 'Ritmo lento para bajar la respiración',
+    kind: 'dormir',
+    source: require('../assets/audio/dormir/olas-del-mar.mp3'),
+    loop: true,
+    free: false,
+    icon: '◠',
+  },
+  {
+    id: 'snd-delta',
+    title: 'Ondas delta',
+    subtitle: 'Tono binaural de 2 Hz. Usa audífonos',
+    kind: 'dormir',
+    source: require('../assets/audio/dormir/ondas-delta.mp3'),
+    loop: true,
+    free: false,
+    tag: 'audífonos',
+    icon: '◎',
+  },
+];
+
+export const HIPNOSIS: Track[] = [
+  {
+    id: 'hip-sueno',
+    title: 'Dormir profundo',
+    subtitle: 'Para quedarte dormida sin darle vueltas',
+    kind: 'hipnosis',
+    duration: '20 min',
+    free: false,
+    icon: '☾',
+  },
+  {
+    id: 'hip-ansiedad',
+    title: 'Soltar la ansiedad',
+    subtitle: 'Calma ante la prueba',
+    kind: 'hipnosis',
+    duration: '15 min',
+    free: false,
+    icon: '○',
+  },
+  {
+    id: 'hip-memoria',
+    title: 'Mi mente recuerda',
+    subtitle: 'Confianza en tu memoria',
+    kind: 'hipnosis',
+    duration: '18 min',
+    free: false,
+    icon: '✦',
+  },
+];
+
+export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS];
+export const findTrack = (id: string) => ALL_TRACKS.find((t) => t.id === id);
+
+export const GOALS = ['Dormir', 'Ansiedad', 'Concentrarme', 'Recordar lo estudiado', 'Bloqueo en la prueba'];

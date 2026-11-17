@@ -1,6 +1,6 @@
 # NeuroTrance
 
-App para estudiantes: meditaciones de 3 minutos para evaluaciones, sonidos para dormir con apagado automático, sesiones de hipnosis y un espacio personal con recordatorio de noche. Hecha con Expo (React Native) para iOS y Android desde un solo código.
+App para estudiantes: meditaciones de 3 minutos para evaluaciones, sonidos para dormir con apagado automático, sesiones de hipnosis y un espacio personal con recordatorio de noche. Hecha con Expo (React Native): un solo código para web, Android e iOS. Se lanza primero como **app web instalable (PWA)** publicada gratis en GitHub Pages; las tiendas vienen después.
 
 ## Qué incluye esta versión (0.1.0)
 
@@ -12,7 +12,7 @@ App para estudiantes: meditaciones de 3 minutos para evaluaciones, sonidos para 
 - **Dormir**: 4 sonidos en bucle (lluvia, ruido rosa, olas, ondas delta binaurales) con temporizador de 15 min, 30 min, 1 hora o toda la noche; el volumen baja de a poco en los últimos 30 segundos. Siguen sonando con la pantalla bloqueada.
 - **Hipnosis**: 3 sesiones listadas como "por grabar".
 - **Mi espacio**: fecha y hora editables, recordatorio diario 15 min antes de dormir, pantalla oscura al dormir, aviso de audífonos, metas y favoritos.
-- **Suscripción**: sin registro de usuario; el contenido gratis se usa sin cuenta y la suscripción se paga con la cuenta de Apple o Google, con 7 días de prueba gratis. Pantalla informativa por ahora. El cobro real (App Store / Google Play, por ejemplo con RevenueCat) queda pendiente hasta tener las cuentas de desarrolladora.
+- **Suscripción**: sin registro. El contenido gratis se usa sin cuenta. La suscripción se paga con un plan de **Mercado Pago** con 7 días de prueba; para activarla se escribe el correo usado en Mercado Pago y un verificador (`server/verificar-suscripcion.js`, Cloudflare Worker gratis) lo confirma. Se vuelve a revisar al abrir la app. El cobro real (App Store / Google Play, por ejemplo con RevenueCat) queda pendiente hasta tener las cuentas de desarrolladora.
 
 ## Dónde está cada cosa
 
@@ -20,6 +20,19 @@ App para estudiantes: meditaciones de 3 minutos para evaluaciones, sonidos para 
 - `src/theme.ts`: colores y tipografías.
 - `src/screens/`: cada pantalla.
 - `assets/audio/dormir/`: sonidos generados para dormir (loops de 2 minutos sin cortes audibles).
+
+## Publicación web (gratis)
+
+- `public/`: plantilla HTML, `manifest.json`, íconos y `sw.js` (funciona sin internet después de la primera visita, incluidos los audios ya escuchados).
+- `.github/workflows/publicar-web.yml`: cada cambio en `main` se publica en `https://<usuario>.github.io/<repositorio>/`. En GitHub: Settings > Pages > Source: **GitHub Actions**.
+- `app.config.js` toma `EXPO_BASE_URL` para la ruta del sitio.
+
+## Activar Mercado Pago
+
+1. Crear un plan de suscripción en Mercado Pago con prueba gratis de 7 días y copiar su enlace en `MERCADO_PAGO_PLAN_URL` (`src/config.ts`).
+2. Publicar `server/verificar-suscripcion.js` en Cloudflare Workers con las variables `MP_ACCESS_TOKEN`, `MP_PLAN_ID` y `ALLOWED_ORIGIN` (nunca en el código).
+3. Poner la dirección del worker en `VERIFY_URL`.
+4. Probar con una suscripción real antes de anunciar. La verificación por correo es simple: suficiente para empezar, pero cualquiera que conozca el correo de una suscriptora podría activarla.
 
 ## Probar en el celular
 

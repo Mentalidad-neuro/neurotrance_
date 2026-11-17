@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useFonts } from 'expo-font';
-import { Sora_400Regular, Sora_600SemiBold } from '@expo-google-fonts/sora';
-import { NunitoSans_400Regular, NunitoSans_600SemiBold, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
+import { Sora_400Regular } from '@expo-google-fonts/sora/400Regular';
+import { Sora_600SemiBold } from '@expo-google-fonts/sora/600SemiBold';
+import { NunitoSans_400Regular } from '@expo-google-fonts/nunito-sans/400Regular';
+import { NunitoSans_600SemiBold } from '@expo-google-fonts/nunito-sans/600SemiBold';
+import { NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans/700Bold';
 import { SettingsProvider, useSettings } from './src/store';
 import { Track, findTrack } from './src/content';
 import { colors, fonts } from './src/theme';
+import { VERIFY_URL } from './src/config';
 import Onboarding from './src/screens/Onboarding';
 import Home, { Tab } from './src/screens/Home';
 import { Dormir, Evaluaciones, Hipnosis } from './src/screens/Lists';
@@ -53,13 +57,25 @@ const TABS: { key: Tab; label: string; icon: React.ReactNode }[] = [
 ];
 
 function Main() {
-  const { ready, s } = useSettings();
+  const { ready, s, update } = useSettings();
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<Tab>('inicio');
   const [profile, setProfile] = useState(false);
   const [onb, setOnb] = useState(false);
   const [playing, setPlaying] = useState<Track | null>(null);
   const [paywall, setPaywall] = useState<Track | null | undefined>(undefined);
+
+  // Al abrir la app, revisa si la suscripción sigue activa (si se canceló, vuelve a la versión gratis).
+  useEffect(() => {
+    if (!ready || !VERIFY_URL || !s.premiumEmail) return;
+    fetch(`${VERIFY_URL}?email=${encodeURIComponent(s.premiumEmail)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (j && j.active === false) update({ premium: false });
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   if (!ready) return <View style={{ flex: 1, backgroundColor: colors.sky }} />;
   if (!s.onboarded || onb) return <Onboarding onDone={() => setOnb(false)} />;

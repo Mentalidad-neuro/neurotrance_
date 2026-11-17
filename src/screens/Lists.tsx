@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Eyebrow, H2, H3, Hint, TrackRow } from '../components/ui';
-import { HIPNOSIS, MEDITACIONES, SONIDOS, TRANCE, Track } from '../content';
+import { HIPNOSIS, MEDITACIONES, RESPIRACION, SONIDOS, TRANCE, Track } from '../content';
 import { useAccess, useSettings } from '../store';
 import { colors } from '../theme';
 import { tr } from '../i18n';
@@ -47,7 +47,7 @@ export function Hipnosis({ open }: P) {
       <Hint>{tr('Cada sesión tendrá un fondo de sonido para entrar en trance y un final para dormir o para despertar con energía.', 'Each session will have a background sound to help you go into trance, and an ending to fall asleep or to wake up with energy.')}</Hint>
       <H3>{tr('Visuales para entrar en trance', 'Visuals for going into trance')}</H3>
       <List items={TRANCE} open={open} />
-      <Hint>{tr('Con ondas theta de fondo (usa audífonos). Sin destellos ni parpadeos. Si eres sensible a la luz, usa el modo suave o solo audio en Mi espacio.', 'With theta waves in the background (use headphones). No flashes or flicker. If you are sensitive to light, use gentle mode or audio only in My space.')}</Hint>
+      <Hint>{tr('Elige el sonido de fondo que prefieras. Sin destellos ni parpadeos. Si eres sensible a la luz, usa el modo suave o solo audio en Mi espacio.', 'Choose the background sound you like. No flashes or flicker. If you are sensitive to light, use gentle mode or audio only in My space.')}</Hint>
     </View>
   );
 }
@@ -59,6 +59,9 @@ export function Evaluaciones({ open }: P) {
       <H2>{tr('Meditaciones de 3 minutos', '3-minute meditations')}</H2>
       <List items={MEDITACIONES} open={open} />
       <Hint>{tr('Úsalas la noche antes, en la fila de entrada o en medio de la prueba. Con audífonos se escuchan mejor.', 'Use them the night before, in line before going in, or in the middle of the exam. They sound best with headphones.')}</Hint>
+      <H3>{tr('Minutos de respiración', 'Breathing minutes')}</H3>
+      <List items={RESPIRACION} open={open} />
+      <Hint>{tr('Sigue el círculo: crece al inhalar, se queda quieto al sostener y se achica al exhalar. Cada paso muestra sus segundos.', 'Follow the circle: it grows as you breathe in, stays still while you hold and shrinks as you breathe out. Each step shows its seconds.')}</Hint>
     </View>
   );
 }

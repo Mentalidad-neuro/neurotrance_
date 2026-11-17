@@ -80,7 +80,7 @@ export function Tile({ title, sub, grad, onPress, wide, icon, iconColor }: { tit
 }
 
 export function TrackRow({ t, locked, onPress, favorite }: { t: Track; locked: boolean; onPress: () => void; favorite?: boolean }) {
-  const soon = !t.source;
+  const soon = !t.source && !t.breathing;
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [s.item, pressed && { opacity: 0.8 }]} accessibilityRole="button" accessibilityLabel={t.title}>
       <View style={s.ic}>

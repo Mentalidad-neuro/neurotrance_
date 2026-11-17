@@ -11,6 +11,7 @@ export type Track = {
   source?: number; // require(...) del archivo; vacío = aún no grabado
   duration?: string; // texto para mostrar
   loop?: boolean; // los sonidos para dormir se repiten hasta el temporizador
+  breathing?: boolean; // respiración guiada: sin voz, solo la guía de tiempos y el fondo elegido
   free: boolean;
   tag?: string;
   icon: string;
@@ -57,6 +58,20 @@ export const MEDITACIONES: Track[] = [
     free: false,
     icon: '4',
   }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '3:33' }),
+];
+
+// Minutos de respiración: la app guía inhala, sostén y exhala con sus segundos.
+export const RESPIRACION: Track[] = [
+  bilingual({
+    id: 'resp-1',
+    title: 'Respiración guiada',
+    subtitle: 'Inhala y exhala con tiempos. Tú eliges la técnica y los minutos',
+    kind: 'meditacion',
+    breathing: true,
+    duration: '1-5 min',
+    free: true,
+    icon: '◯',
+  }, { title: 'Guided breathing', subtitle: 'Breathe in and out with timing. You choose the technique and the minutes', duration: '1-5 min' }),
 ];
 
 export const SONIDOS: Track[] = [
@@ -207,7 +222,7 @@ export const POMODOROS = [
 ];
 export const LONG_REST = 15; // después de 4 bloques
 
-export const ALL_TRACKS = [...MEDITACIONES, ...SONIDOS, ...HIPNOSIS, ...TRANCE, ...ESTUDIO];
+export const ALL_TRACKS = [...RESPIRACION, ...MEDITACIONES, ...SONIDOS, ...HIPNOSIS, ...TRANCE, ...ESTUDIO];
 export const findTrack = (id: string) => ALL_TRACKS.find((t) => t.id === id);
 
 // Se guardan en español; goalLabel() muestra el texto en el idioma activo.

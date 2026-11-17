@@ -88,7 +88,7 @@ function Main() {
   if (!s.onboarded || onb) return <Onboarding onDone={() => setOnb(false)} />;
 
   const open = (t: Track) => {
-    if (!t.source || isLocked(t)) setPaywall(t);
+    if ((!t.source && !t.breathing) || isLocked(t)) setPaywall(t);
     else setPlaying(t);
   };
   const playId = (id: string) => {

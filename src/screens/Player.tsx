@@ -19,7 +19,15 @@ const TIMER_OPTIONS = () => [
   { label: tr('Toda la noche', 'All night'), min: 0 },
 ];
 const FADE_SECONDS = 30;
-const CUES = () => [tr('Inhala…', 'Breathe in…'), tr('Sostén…', 'Hold…'), tr('Exhala…', 'Breathe out…')];
+type Step = 'in' | 'hold' | 'out';
+// Técnicas de respiración con sus segundos. La guía muestra cada paso con su cuenta regresiva.
+export const TECHS = () => [
+  { key: 'calma', label: tr('Calma 4·6', 'Calm 4·6'), steps: [['in', 4], ['out', 6]] as [Step, number][] },
+  { key: 'cuadrada', label: tr('Cuadrada 4·4·4·4', 'Box 4·4·4·4'), steps: [['in', 4], ['hold', 4], ['out', 4], ['hold', 4]] as [Step, number][] },
+  { key: 'dormir', label: tr('Para dormir 4·7·8', 'For sleep 4·7·8'), steps: [['in', 4], ['hold', 7], ['out', 8]] as [Step, number][] },
+];
+const STEP_LABEL = (k: Step) => (k === 'in' ? tr('Inhala', 'Breathe in') : k === 'out' ? tr('Exhala', 'Breathe out') : tr('Sostén', 'Hold'));
+const BREATH_MIN = [1, 3, 5];
 
 // Íconos simples para cada sonido de fondo.
 function BgIcon({ k, color }: { k: string; color: string }) {
@@ -58,17 +66,23 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   const tranceBg = findBg(s.tranceBg === 'ninguno' ? 'theta' : s.tranceBg);
   const player = useAudioPlayer((isTrance ? tranceBg.source : track.source) ?? null, { updateInterval: 500 });
   const status = useAudioPlayerStatus(player);
+  const isBreath = !!track.breathing;
+  const [running, setRunning] = useState(false);
+  const [breathMin, setBreathMin] = useState(3);
+  const [elapsed, setElapsed] = useState(0);
+  const playing = isBreath ? running : status.playing;
   const bg = findBg(s.bg);
   const bgPlayer = useAudioPlayer(hasVoice ? bg.source ?? null : null);
   const bgKey = isTrance ? tranceBg.key : hasVoice ? bg.key : null;
   const lastBg = useRef(bgKey);
   const [sleepMin, setSleepMin] = useState(30);
-  const [cue, setCue] = useState(0);
+  const tech = TECHS().find((t) => t.key === s.breathTech) ?? TECHS()[0];
+  const [ph, setPh] = useState({ i: 0, left: tech.steps[0][1] });
+  const guide = useRef(new Animated.Value(0)).current;
   const [dim, setDim] = useState(false);
   const listenedSec = useRef(0);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fadeInterval = useRef<ReturnType<typeof setInterval> | null>(null);
-  const breathe = useRef(new Animated.Value(0.9)).current;
   const isLoop = !!track.loop;
   const fav = s.favorites.includes(track.id);
 
@@ -77,7 +91,10 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true, interruptionMode: 'doNotMix' }).catch(() => {});
     player.loop = isLoop;
     player.volume = 1;
-    if (!warn) player.play();
+    if (!warn) {
+      if (isBreath) setRunning(true);
+      else player.play();
+    }
     if (Platform.OS !== 'web') {
       try {
         player.setActiveForLockScreen(true, { title: track.title, artist: 'NeuroTrance' });
@@ -95,10 +112,10 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   // El fondo sigue a la voz: suena cuando la voz suena y se detiene con ella.
   useEffect(() => {
     if (!hasVoice) return;
-    if (status.playing && bg.source) bgPlayer.play();
+    if (playing && bg.source) bgPlayer.play();
     else bgPlayer.pause();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status.playing, bg.key]);
+  }, [playing, bg.key]);
 
   useEffect(() => {
     bgPlayer.volume = s.bgVolume;
@@ -109,7 +126,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     if (bgKey === lastBg.current) return;
     lastBg.current = bgKey;
     if (isTrance && tranceBg.source) {
-      const was = status.playing;
+      const was = playing;
       player.replace(tranceBg.source);
       player.loop = true;
       if (was) player.play();
@@ -118,7 +135,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
         bgPlayer.replace(bg.source);
         bgPlayer.loop = true;
         bgPlayer.volume = s.bgVolume;
-        if (status.playing) bgPlayer.play();
+        if (playing) bgPlayer.play();
       } else bgPlayer.pause();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,35 +148,68 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
 
   // Cuenta el tiempo escuchado (para "Tu semana").
   useEffect(() => {
-    if (!status.playing) return;
+    if (!playing) return;
     const id = setInterval(() => (listenedSec.current += 1), 1000);
     return () => clearInterval(id);
-  }, [status.playing]);
+  }, [playing]);
 
-  // Guía de respiración y esfera que respira.
+  // Guía de respiración: inhala, sostén y exhala con sus segundos. El visual crece y se achica con ella.
   useEffect(() => {
-    if (!status.playing) {
-      breathe.stopAnimation();
+    if (!playing) {
+      guide.stopAnimation();
       return;
     }
-    const id = setInterval(() => setCue((c) => (c + 1) % 3), 4000);
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.timing(breathe, { toValue: 1.05, duration: 4000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(breathe, { toValue: 0.9, duration: 4000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      ]),
-    );
-    anim.start();
+    let i = 0;
+    let left = tech.steps[0][1];
+    const startStep = (idx: number) => {
+      const [k, sec] = tech.steps[idx];
+      if (k === 'hold') return;
+      Animated.timing(guide, { toValue: k === 'in' ? 1 : 0, duration: sec * 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }).start();
+    };
+    guide.setValue(0);
+    startStep(0);
+    setPh({ i, left });
+    const id = setInterval(() => {
+      left -= 1;
+      if (left <= 0) {
+        i = (i + 1) % tech.steps.length;
+        left = tech.steps[i][1];
+        startStep(i);
+      }
+      setPh({ i, left });
+    }, 1000);
     return () => {
       clearInterval(id);
-      anim.stop();
+      guide.stopAnimation();
     };
-  }, [status.playing, breathe]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing, tech.key]);
+
+  // Respiración guiada: cuenta los minutos y termina sola.
+  useEffect(() => {
+    if (!isBreath || !running) return;
+    const id = setInterval(() => {
+      setElapsed((e) => {
+        if (e + 1 >= breathMin * 60) {
+          setRunning(false);
+          return breathMin * 60;
+        }
+        return e + 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isBreath, running, breathMin]);
+
+  const cycleTech = () => {
+    const all = TECHS();
+    const idx = all.findIndex((t) => t.key === tech.key);
+    update({ breathTech: all[(idx + 1) % all.length].key });
+  };
 
   // Temporizador de apagado para los sonidos de dormir: baja el volumen de a poco y se detiene.
   useEffect(() => {
     clearFade();
-    if (!isLoop || !status.playing || sleepMin === 0) return;
+    if (!isLoop || !playing || sleepMin === 0) return;
     fadeTimer.current = setTimeout(() => {
       let v = 1;
       fadeInterval.current = setInterval(() => {
@@ -174,15 +224,15 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     }, Math.max(0, sleepMin * 60 - FADE_SECONDS) * 1000);
     return clearFade;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sleepMin, status.playing, isLoop]);
+  }, [sleepMin, playing, isLoop]);
 
   // Pantalla oscura: 20 s después de empezar un sonido para dormir.
   useEffect(() => {
-    if (!status.playing) return;
+    if (!playing) return;
     if (!audioOnly && (!isLoop || !s.dimScreen)) return;
     const id = setTimeout(() => setDim(true), audioOnly ? 4000 : 20000);
     return () => clearTimeout(id);
-  }, [isLoop, s.dimScreen, status.playing, audioOnly]);
+  }, [isLoop, s.dimScreen, playing, audioOnly]);
 
   function clearFade() {
     if (fadeTimer.current) clearTimeout(fadeTimer.current);
@@ -192,7 +242,12 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   }
 
   const toggle = () => {
-    if (status.playing) player.pause();
+    if (isBreath) {
+      if (!running && elapsed >= breathMin * 60) setElapsed(0);
+      setRunning(!running);
+      return;
+    }
+    if (playing) player.pause();
     else {
       if (!isLoop && status.duration > 0 && status.currentTime >= status.duration - 0.5) player.seekTo(0);
       player.volume = 1;
@@ -200,7 +255,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     }
   };
 
-  const progress = !isLoop && status.duration > 0 ? Math.min(1, status.currentTime / status.duration) : 0;
+  const progress = isBreath ? elapsed / (breathMin * 60) : !isLoop && status.duration > 0 ? Math.min(1, status.currentTime / status.duration) : 0;
+  const breathDone = isBreath && elapsed >= breathMin * 60;
 
   return (
     <LinearGradient colors={[colors.gradTop, colors.sky]} locations={[0, 0.7]} style={[st.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24 }]}>
@@ -218,7 +274,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
             <Text style={st.audioOnlyText}>{tr('Solo audio', 'Audio only')}</Text>
           </View>
         ) : (
-          <TranceVisual kind={visual} playing={status.playing} safe={safe} />
+          <TranceVisual kind={visual} playing={playing} safe={safe} breath={guide} />
         )}
       </View>
       {!audioOnly && (
@@ -240,20 +296,33 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
             <View style={[st.barFill, { width: `${progress * 100}%` }]} />
           </View>
           <View style={st.times}>
-            <Text style={st.time}>{fmt(status.currentTime)}</Text>
-            <Text style={st.time}>{status.duration > 0 ? fmt(status.duration) : track.duration}</Text>
+            <Text style={st.time}>{fmt(isBreath ? elapsed : status.currentTime)}</Text>
+            <Text style={st.time}>{isBreath ? fmt(breathMin * 60) : status.duration > 0 ? fmt(status.duration) : track.duration}</Text>
           </View>
         </>
       )}
 
       <View style={{ alignItems: 'center', marginTop: 18 }}>
-        <Pressable style={st.big} onPress={toggle} accessibilityRole="button" accessibilityLabel={status.playing ? tr('Pausar', 'Pause') : tr('Reproducir', 'Play')}>
+        <Pressable style={st.big} onPress={toggle} accessibilityRole="button" accessibilityLabel={playing ? tr('Pausar', 'Pause') : tr('Reproducir', 'Play')}>
           <Svg width={30} height={30} viewBox="0 0 24 24">
-            <Path d={status.playing ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M8 5v14l11-7z'} fill={colors.sky} />
+            <Path d={playing ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M8 5v14l11-7z'} fill={colors.sky} />
           </Svg>
         </Pressable>
       </View>
-      <Text style={st.cue}>{status.playing ? CUES()[cue] : status.isBuffering ? tr('Cargando…', 'Loading…') : ''}</Text>
+      <Text style={st.cue} accessibilityLiveRegion="polite">
+        {playing ? `${STEP_LABEL(tech.steps[ph.i][0])} · ${ph.left}` : breathDone ? tr('Terminaste. Bien hecho.', 'Done. Well done.') : status.isBuffering && !isBreath ? tr('Cargando…', 'Loading…') : ''}
+      </Text>
+      <View style={st.techRow}>
+        <Pressable onPress={cycleTech} style={st.techBtn} accessibilityRole="button" accessibilityLabel={tr(`Técnica de respiración: ${tech.label}. Toca para cambiar`, `Breathing technique: ${tech.label}. Tap to change`)}>
+          <Text style={st.techText}>{tr('Respiración', 'Breathing')}: {tech.label}  ⟳</Text>
+        </Pressable>
+        {isBreath &&
+          BREATH_MIN.map((m) => (
+            <Pressable key={m} onPress={() => { setBreathMin(m); setElapsed(0); }} style={[st.tBtn, breathMin === m && st.tBtnOn]} accessibilityRole="radio" accessibilityState={{ selected: breathMin === m }}>
+              <Text style={[st.tText, breathMin === m && { color: colors.sky }]}>{m} min</Text>
+            </Pressable>
+          ))}
+      </View>
 
       {isLoop && (
         <>
@@ -320,7 +389,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
               onPress={() => {
                 update({ visualMode: o.mode, photoWarned: true });
                 setWarn(false);
-                player.play();
+                if (isBreath) setRunning(true);
+                else player.play();
               }}
               accessibilityRole="button"
             >
@@ -376,6 +446,9 @@ const st = StyleSheet.create({
   tText: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.muted },
   tip: { textAlign: 'center', color: colors.blue, fontFamily: fonts.body, fontSize: 12, marginTop: 12 },
   bgBox: { marginTop: 4 },
+  techRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 8 },
+  techBtn: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 99, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card },
+  techText: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.text },
   bgChip: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   bgRow: { gap: 8, paddingHorizontal: 4, paddingTop: 8 },
   volRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 12, paddingHorizontal: 20 },

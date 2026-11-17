@@ -15,7 +15,7 @@ import { tr } from '../i18n';
 // Sin registro: para activar en otro teléfono basta con el correo usado en Mercado Pago.
 export default function Paywall({ track, onClose }: { track: Track | null; onClose: () => void }) {
   const insets = useSafeAreaInsets();
-  const notRecorded = track && !track.source;
+  const notRecorded = track && !track.source && !track.breathing;
   const { update } = useSettings();
   const { inTrial, daysLeft } = useAccess();
   const [askEmail, setAskEmail] = useState(false);

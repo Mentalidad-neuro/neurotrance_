@@ -44,7 +44,7 @@ export function Hipnosis({ open }: P) {
       <Eyebrow>{tr('Hipnosis transformacional', 'Transformational hypnosis')}</Eyebrow>
       <H2>{tr('Sesiones para tu mente', 'Sessions for your mind')}</H2>
       <List items={HIPNOSIS} open={open} />
-      <Hint>{tr('Cada sesión tendrá un fondo de sonido para entrar en trance y un final para dormir o para despertar con energía.', 'Each session will have a background sound to help you go into trance, and an ending to fall asleep or to wake up with energy.')}</Hint>
+      <Hint>{tr('Elige en el reproductor el sonido de fondo que más te ayude a entrar en trance. Usa audífonos y busca un lugar tranquilo.', 'In the player, choose the background sound that best helps you go into trance. Use headphones and find a quiet place.')}</Hint>
       <H3>{tr('Visuales para entrar en trance', 'Visuals for going into trance')}</H3>
       <List items={TRANCE} open={open} />
       <Hint>{tr('Elige el sonido de fondo que prefieras. Sin destellos ni parpadeos. Si eres sensible a la luz, usa el modo suave o solo audio en Mi espacio.', 'Choose the background sound you like. No flashes or flicker. If you are sensitive to light, use gentle mode or audio only in My space.')}</Hint>

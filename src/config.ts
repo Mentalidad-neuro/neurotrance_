@@ -2,7 +2,7 @@
 
 // Enlace del plan de suscripción creado en Mercado Pago (Suscripciones > Planes).
 // Ejemplo: 'https://www.mercadopago.cl/subscriptions/checkout?preapproval_plan_id=XXXX'
-export const MERCADO_PAGO_PLAN_URL = '';
+export const MERCADO_PAGO_PLAN_URL = 'https://mpago.la/1jeh4FN';
 
 // Dirección del verificador de suscripción (carpeta server/). Vacío = aún no activo.
 export const VERIFY_URL = '';

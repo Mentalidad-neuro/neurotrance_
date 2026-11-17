@@ -3,7 +3,7 @@
 //
 // Variables que se configuran en Cloudflare (nunca en el código ni en GitHub):
 //   MP_ACCESS_TOKEN  -> credencial de producción de Mercado Pago (Tus integraciones > Credenciales)
-//   MP_PLAN_ID       -> id del plan de suscripción (preapproval_plan_id)
+//   MP_PLAN_ID       -> (opcional) id del plan de suscripción; si no está, sirve cualquier suscripción activa de la cuenta
 //   ALLOWED_ORIGIN   -> dirección donde está publicada la app, p. ej. https://usuario.github.io
 //
 // La app llama: GET /?email=correo@ejemplo.com  ->  { "active": true | false }
@@ -22,7 +22,8 @@ export default {
       return new Response(JSON.stringify({ active: false, error: 'correo inválido' }), { status: 400, headers: cors });
     }
 
-    const q = new URLSearchParams({ payer_email: email, preapproval_plan_id: env.MP_PLAN_ID, limit: '10' });
+    const q = new URLSearchParams({ payer_email: email, limit: '10' });
+    if (env.MP_PLAN_ID) q.set('preapproval_plan_id', env.MP_PLAN_ID);
     const res = await fetch(`https://api.mercadopago.com/preapproval/search?${q}`, {
       headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` },
     });

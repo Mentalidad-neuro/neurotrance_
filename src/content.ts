@@ -37,7 +37,7 @@ export const MEDITACIONES: Track[] = [
     duration: '3:05',
     free: true,
     icon: '2',
-  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '3:39' }),
+  }, { title: 'Before you walk in', subtitle: 'In line or sitting while you wait', source: require('../assets/audio/meditaciones/en/2-before-you-walk-in.mp3'), duration: '3:38' }),
   bilingual({
     id: 'med-3',
     title: 'Si me bloqueo',
@@ -57,7 +57,7 @@ export const MEDITACIONES: Track[] = [
     duration: '2:51',
     free: false,
     icon: '4',
-  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '3:33' }),
+  }, { title: 'Between exams', subtitle: 'To let go of the last one and start fresh', source: require('../assets/audio/meditaciones/en/4-between-exams.mp3'), duration: '3:31' }),
 ];
 
 // Minutos de respiración: la app guía inhala, sostén y exhala con sus segundos.
@@ -129,7 +129,7 @@ export const HIPNOSIS: Track[] = [
     duration: '5:22',
     free: false,
     icon: '☾',
-  }, { title: 'Deep sleep', subtitle: 'To fall asleep without overthinking', source: require('../assets/audio/hipnosis/voz/en/1-deep-sleep.mp3'), duration: '6:14' }),
+  }, { title: 'Deep sleep', subtitle: 'To fall asleep without overthinking', source: require('../assets/audio/hipnosis/voz/en/1-deep-sleep.mp3'), duration: '6:12' }),
   bilingual({
     id: 'hip-ansiedad',
     title: 'Soltar la ansiedad',
@@ -149,7 +149,7 @@ export const HIPNOSIS: Track[] = [
     duration: '5:47',
     free: false,
     icon: '✦',
-  }, { title: 'My mind remembers', subtitle: 'Trust in your memory', source: require('../assets/audio/hipnosis/voz/en/3-memory-mental-processes.mp3'), duration: '6:18' }),
+  }, { title: 'My mind remembers', subtitle: 'Trust in your memory', source: require('../assets/audio/hipnosis/voz/en/3-memory-mental-processes.mp3'), duration: '6:17' }),
 ];
 
 // Visuales para entrar en trance, con fondo de ondas theta (estado previo al sueño).

@@ -5,7 +5,7 @@
 export const MERCADO_PAGO_PLAN_URL = 'https://mpago.la/1jeh4FN';
 
 // Dirección del verificador de suscripción (carpeta server/). Vacío = aún no activo.
-export const VERIFY_URL = '';
+export const VERIFY_URL = 'https://neurotrance-verificar.neuropsicologia-ms.workers.dev';
 
 // Días con todo libre desde la primera vez que se abre la app (sin pedir tarjeta).
 export const TRIAL_DAYS = 7;

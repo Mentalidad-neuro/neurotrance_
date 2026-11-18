@@ -39,3 +39,8 @@ jobs:
             MP_ACCESS_TOKEN
         env:
           MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+      - name: Probar el verificador
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          sleep 5
+          curl -sS -w "\nHTTP %{http_code}\n" "https://neurotrance-verificar.neuropsicologia-ms.workers.dev/?email=prueba-neurotrance@ejemplo.com"

@@ -58,7 +58,7 @@ export default function Profile({ back, open, restartOnboarding }: { back: () =>
       <H3>{tr('Noche', 'Night')}</H3>
       <View style={{ gap: 8 }}>
         <Row title={tr('Recordatorio de noche', 'Bedtime reminder')} sub={tr(`Te avisamos a las ${addMinutes(s.bedtime, -15)}`, `We remind you at ${addMinutes(s.bedtime, -15)}`)} right={<Toggle label={tr('Recordatorio de noche', 'Bedtime reminder')} value={s.reminder} onChange={setReminder} />} />
-        <Row title={tr('Pantalla oscura al dormir', 'Dark screen while sleeping')} sub={tr('La pantalla se oscurece y el sonido sigue', 'The screen dims and the sound keeps playing')} right={<Toggle label={tr('Pantalla oscura', 'Dark screen')} value={s.dimScreen} onChange={(v) => update({ dimScreen: v })} />} />
+        <Row title={tr('Pantalla oscura', 'Dark screen')} sub={tr('La pantalla se oscurece y el sonido sigue', 'The screen dims and the sound keeps playing')} right={<Toggle label={tr('Pantalla oscura', 'Dark screen')} value={s.darkScreen} onChange={(v) => update({ darkScreen: v })} />} />
         <Row title={tr('Aviso de audífonos', 'Headphones tip')} sub={tr('Para las ondas binaurales', 'For binaural waves')} right={<Toggle label={tr('Aviso de audífonos', 'Headphones tip')} value={s.headphoneTip} onChange={(v) => update({ headphoneTip: v })} />} />
       </View>
 

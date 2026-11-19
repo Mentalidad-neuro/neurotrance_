@@ -8,7 +8,7 @@ export type Settings = {
   examDate: string | null; // AAAA-MM-DD
   bedtime: string; // HH:MM
   reminder: boolean;
-  dimScreen: boolean;
+  darkScreen: boolean;
   headphoneTip: boolean;
   favorites: string[];
   premium: boolean; // suscripción activa (Mercado Pago)
@@ -33,7 +33,7 @@ const DEFAULTS: Settings = {
   examDate: null,
   bedtime: '23:00',
   reminder: true,
-  dimScreen: true,
+  darkScreen: false,
   headphoneTip: true,
   favorites: [],
   premium: false,

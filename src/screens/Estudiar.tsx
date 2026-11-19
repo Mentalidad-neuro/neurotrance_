@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { Eyebrow, H2, H3, Hint, Pill } from '../components/ui';
 import StudyList from '../components/StudyList';
@@ -37,6 +37,7 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
   const loaded = useRef<string | null>(ESTUDIO[0].id);
   const wantSound = useRef(false);
   const [hearing, setHearing] = useState(false);
+  const hearingRef = useRef(false);
   const chime = useAudioPlayer(chimeSource);
   const focusMs = useRef(0);
 
@@ -53,13 +54,32 @@ export default function Estudiar({ locked }: { locked: (t: Track) => void }) {
     player.loop = true;
     player.volume = 1;
     player.play();
+    try {
+      player.setActiveForLockScreen(true, { title: t.title, artist: 'NeuroTrance' });
+    } catch {}
     wantSound.current = true;
+    hearingRef.current = true;
     setHearing(true);
   }
   function stopSound() {
     player.pause();
+    hearingRef.current = false;
     setHearing(false);
   }
+
+  // Si el celular pausó el sonido (otra app, un mensaje, cambio de pestaña), vuelve a sonar al regresar.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const resume = () => {
+      if (document.visibilityState === 'visible' && hearingRef.current && !player.playing) player.play();
+    };
+    document.addEventListener('visibilitychange', resume);
+    window.addEventListener('focus', resume);
+    return () => {
+      document.removeEventListener('visibilitychange', resume);
+      window.removeEventListener('focus', resume);
+    };
+  }, [player]);
 
   // En el descanso el sonido se pausa y vuelve al empezar el siguiente bloque.
   useEffect(() => {

@@ -85,6 +85,8 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
   const [dim, setDim] = useState(false);
   const listenedSec = useRef(0);
   const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // true cuando la persona quiere que suene (no cuando el celular lo pausó por otra app).
+  const wantPlay = useRef(false);
   const fadeInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const isLoop = !!track.loop;
   // La cuenta de respiración va en la respiración guiada y en los visuales y sonidos. En meditaciones e hipnosis guía la voz.
@@ -98,9 +100,13 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     player.volume = 1;
     if (!warn) {
       if (isBreath) setRunning(true);
-      else player.play();
+      else {
+        wantPlay.current = true;
+        player.play();
+      }
     }
-    if (Platform.OS !== 'web') {
+    // Controles en la pantalla de bloqueo y en las notificaciones (también en la web): ayuda a que siga sonando en segundo plano.
+    if (mainSrc) {
       try {
         player.setActiveForLockScreen(true, { title: track.title, artist: 'NeuroTrance' });
       } catch {}
@@ -237,6 +243,7 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
         v -= 1 / FADE_SECONDS;
         if (v <= 0) {
           clearFade();
+          wantPlay.current = false;
           player.pause();
           player.volume = 1;
           setDim(false);
@@ -247,13 +254,29 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sleepMin, playing, isLoop]);
 
-  // Pantalla oscura: 20 s después de empezar un sonido para dormir.
+  // Pantalla oscura: solo si la persona la activa en Perfil (viene apagada).
   useEffect(() => {
-    if (!playing) return;
-    if (!audioOnly && (!isLoop || !s.dimScreen)) return;
-    const id = setTimeout(() => setDim(true), audioOnly ? 4000 : 20000);
+    if (!playing || !s.darkScreen) return;
+    const id = setTimeout(() => setDim(true), 20000);
     return () => clearTimeout(id);
-  }, [isLoop, s.dimScreen, playing, audioOnly]);
+  }, [s.darkScreen, playing]);
+
+  // Si el celular pausó el audio (otra app, un mensaje, cambio de pestaña), vuelve a sonar al regresar.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const resume = () => {
+      if (document.visibilityState !== 'visible' || !wantPlay.current) return;
+      if (!player.playing) player.play();
+      if (hasVoice && bg.source && !bgPlayer.playing) bgPlayer.play();
+    };
+    document.addEventListener('visibilitychange', resume);
+    window.addEventListener('focus', resume);
+    return () => {
+      document.removeEventListener('visibilitychange', resume);
+      window.removeEventListener('focus', resume);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bg.key]);
 
   function clearFade() {
     if (fadeTimer.current) clearTimeout(fadeTimer.current);
@@ -272,8 +295,11 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
       setRunning(!running);
       return;
     }
-    if (playing) player.pause();
-    else {
+    if (playing) {
+      wantPlay.current = false;
+      player.pause();
+    } else {
+      wantPlay.current = true;
       if (!isLoop && status.duration > 0 && status.currentTime >= status.duration - 0.5) player.seekTo(0);
       player.volume = 1;
       player.play();
@@ -418,7 +444,10 @@ export default function Player({ track, onClose }: { track: Track & { visual?: V
                 update({ visualMode: o.mode, photoWarned: true });
                 setWarn(false);
                 if (isBreath) setRunning(true);
-                else player.play();
+                else {
+                  wantPlay.current = true;
+                  player.play();
+                }
               }}
               accessibilityRole="button"
             >

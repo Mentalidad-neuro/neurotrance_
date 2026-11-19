@@ -30,6 +30,11 @@ jobs:
         env:
           EXPO_BASE_URL: /${{ github.event.repository.name }}
       # GitHub Pages no sirve carpetas que empiezan con "_" sin este archivo.
+      # Marca de versión: la app la compara para actualizarse sola cuando hay cambios.
+      - run: |
+          echo "{\"v\":\"$GITHUB_SHA\"}" > dist/version.json
+          sed -i "s/__APP_VERSION__/$GITHUB_SHA/" dist/index.html
+          grep -q "$GITHUB_SHA" dist/index.html
       - run: touch dist/.nojekyll && cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:

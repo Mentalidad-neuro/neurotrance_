@@ -1,6 +1,6 @@
 // Service worker de NeuroTrance: guarda la app y los audios en el teléfono
 // para que funcione sin internet después de la primera visita.
-const CACHE = 'neurotrance-v1';
+const CACHE = 'neurotrance-v2';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './manifest.json'])).then(() => self.skipWaiting()));
@@ -18,6 +18,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  // El aviso de versión nueva siempre se consulta en internet.
+  if (new URL(req.url).pathname.endsWith('/version.json')) return;
   // Los audios piden rangos de bytes: si el audio ya está guardado se responde el trozo pedido;
   // si no, se responde desde la red y se guarda el archivo completo para la próxima vez.
   if (req.headers.has('range')) {

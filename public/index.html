@@ -47,5 +47,67 @@
         });
       }
     </script>
+    <script>
+      // Actualización automática: si hay una versión nueva publicada, la app se recarga sola.
+      // Si en ese momento está sonando algo, no se corta: aparece un aviso con el botón "Actualizar".
+      (function () {
+        var V = '__APP_VERSION__';
+        if (V.indexOf('APP_VERSION') >= 0 || !window.fetch) return;
+        var media = [];
+        var play = HTMLMediaElement.prototype.play;
+        HTMLMediaElement.prototype.play = function () {
+          if (media.indexOf(this) < 0) media.push(this);
+          return play.apply(this, arguments);
+        };
+        function busy() {
+          for (var i = 0; i < media.length; i++) if (!media[i].paused) return true;
+          return false;
+        }
+        var pending = false, shown = false, target = '';
+        function reload() {
+          // Evita recargar en bucle si el navegador todavía entrega la versión anterior.
+          var key = 'nt-update-' + target, n = 0;
+          try { n = +sessionStorage.getItem(key) || 0; sessionStorage.setItem(key, n + 1); } catch (e) {}
+          if (n >= 2) return banner();
+          location.replace(location.pathname + '?v=' + target.slice(0, 8) + location.hash);
+        }
+        function banner() {
+          if (shown) return;
+          shown = true;
+          var es = (navigator.language || 'es').toLowerCase().indexOf('en') !== 0;
+          var b = document.createElement('div');
+          b.setAttribute('role', 'status');
+          b.style.cssText = 'position:fixed;left:12px;right:12px;bottom:84px;z-index:99999;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#1f2a44;color:#fff;font:15px system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)';
+          var t = document.createElement('span');
+          t.style.flex = '1';
+          t.textContent = es ? 'Hay una versión nueva de la app.' : 'A new version of the app is ready.';
+          var btn = document.createElement('button');
+          btn.textContent = es ? 'Actualizar' : 'Update';
+          btn.style.cssText = 'border:0;border-radius:12px;padding:10px 14px;background:#bfe3d6;color:#1f2a44;font:600 15px system-ui,sans-serif';
+          btn.onclick = function () { location.replace(location.pathname + '?v=' + target.slice(0, 8) + location.hash); };
+          b.appendChild(t);
+          b.appendChild(btn);
+          document.body.appendChild(b);
+        }
+        function apply() {
+          if (!pending) return;
+          if (!busy() && document.visibilityState === 'visible') reload();
+          else banner();
+        }
+        function check() {
+          fetch('./version.json?t=' + Date.now(), { cache: 'no-store' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (j) {
+              if (j && j.v && j.v !== V) { target = j.v; pending = true; apply(); }
+            })
+            .catch(function () {});
+        }
+        setTimeout(check, 4000);
+        setInterval(check, 10 * 60 * 1000);
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') { if (pending) apply(); else check(); }
+        });
+      })();
+    </script>
   </body>
 </html>
